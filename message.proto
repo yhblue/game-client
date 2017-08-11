@@ -1,0 +1,32 @@
+message Hero_msg{
+	required string name = 1;
+	required int32 point_x = 2;
+	required int32 point_y = 3;
+}
+
+message Heart_beat{
+	
+}
+
+message Login_req{
+	
+}
+
+message Login_rsp{
+	
+}
+
+message New_client{
+	required string name = 1;
+	required int32 point_x = 2;
+	required int32 point_y = 3;
+}
+
+message Enemy_msg{
+	required string name = 1;
+	required int32 point_x = 2;
+	required int32 point_y = 3;	
+}
+
+
+

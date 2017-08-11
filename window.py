@@ -26,7 +26,7 @@ ENEMY_PIC_PATH = "./pic/enemy.jpg"
 BACK_PIC_PATH = "./pic/background.jpg"
 
 ADDRESS = "localhost"
-PORT=8888
+PORT = 3080
 
 class HERO_PLAYER(object):
 	"""docstring for player"""
@@ -125,39 +125,59 @@ def key_control(hero):
 			hero.up = False
 
 
-def client_send(hero):
+def client_send(sock,hero,enemy_list):
+	while True:
+		time.sleep(0.1)
+		sock.sendall("hellow tcp server")
+		pass
 
 
-def client_recv():
 
+def client_recv(sock,buff_recv):
+	while True:
+		data = sock.recv(128)
+		if data:
+			buff_recv.append(data)
+			print(data)
+
+
+def scene_load():
+	pass
+	
 
 def main():
+
+	buff_recv = []
+	enemy_list = []
 	screen = pygame.display.set_mode((PIC_X,PIC_Y),0,32)
-	background = pygame.image.load(BACK_PIC_PATH);
-	hero = HERO_PLAYER(screen);
-	enemy = ENEMY_PLAYER(screen); 
+	background = pygame.image.load(BACK_PIC_PATH)
+	hero = HERO_PLAYER(screen)
+	enemy = ENEMY_PLAYER(screen)
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sock.connect((ADDRESS, PORT)) 
 
 	print('thread %s is running...' % threading.current_thread().name)
-	thread_read = threading.Thread(target=client_send, name='client_send_Thread')
-	thread_write = threading.Thread(target=client_recv,name='client_recv_Thread')
+	thread_read = threading.Thread(target=client_send,args=(sock,hero,enemy_list))
+	thread_write = threading.Thread(target=client_recv,args=(sock,buff_recv))
 	thread_read.start()
 	thread_write.start()
 
 	while True:
 		screen.blit(background, (START_X,START_Y))
 		hero.display()
-		enemy.display();
+		enemy.display()
 		pygame.display.update()
 
-		key_control(hero);
+		key_control(hero)
 		hero.position_update()
 		time.sleep(0.01)
 
-		thread_read.join()
-		thread_write.join()
+	sock.close()
+	thread_read.join()
+	thread_write.join()
 
 if __name__ == "__main__":
 	main()
 
+
+#http://www.cnblogs.com/lewiskyo/p/6240854.html
