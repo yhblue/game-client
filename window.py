@@ -4,6 +4,7 @@ import time
 import socket
 import threading
 import message_pb2
+import sys
 
 PIC_X = 1000
 PIC_Y = 600
@@ -43,6 +44,10 @@ HEART_REQ='r'
 
 ENEMY_MSG='e'
 
+NEW_ENEMY='n'
+
+GAME_START='s'
+
 class HERO_PLAYER(object):
 	"""docstring for player"""
 	def __init__(self, screen,lock):
@@ -56,7 +61,7 @@ class HERO_PLAYER(object):
 		self.right = False
 		self.down = False
 		self.lock = lock
-
+		
 	def display(self):
 		self.lock.acquire()
 		try:
@@ -109,9 +114,12 @@ class HERO_PLAYER(object):
 	def set_uid(self,uid):
 		self.uid = uid
 
-	def set_position(x,y)
+	def set_position(x,y):
 		self.x = x
 		self.y = y
+
+	def set_connect(flag):
+		self.connect = flag
 
 class ENEMY_PLAYER(object):
 	"""docstring for enemy"""
@@ -124,33 +132,43 @@ class ENEMY_PLAYER(object):
 	def display(self):
 		self.screen.blit(self.image, (self.x,self.y))
 
-	def move_left(self):
-		if self.x >= STEP:
-			self.x -= STEP
-
-	def move_right(self):			
-		if self.x <= X_MAX - STEP:
-			self.x += STEP
-
-	def move_up(self):
-		if self.y >= STEP:
-			self.y -= STEP
-
-	def move_down(self):
-		if self.y <= Y_MAX - STEP:
-			self.y += STEP
+	def update_msg(x,y):
+		self.x = x
+		self.y = y
 
 class GAME(object):
 	"""docstring for game"""
-	def __init__(self, arg):
-		self.enemy_list = []
+	def __init__(self):
+		self.uid2enemy_dic = {}
 		self.enemy_num = 0
+		self.connect = False
+		self.log_in = False
 
-	def append_enemy(self,enemy):
-		self.enemy_list.append(enemy)
-	
-	def set_enemy_num(self,num)
+	def append_enemy(self,key_uid,val_enemy):
+		self.uid2enemy_dic(self,key_uid,val_enemy)
+
+	def set_enemy_num(self,num):
 		self.enemy_num = num
+
+	def enemy_num_increase(self):
+		self.enemy_num += 1
+
+	def get_enemy_num(self):
+		if(len(self.uid2enemy_dic) == self.enemy_num):
+			return self.enemy_num
+		else:
+			print("get_enemy_num err")
+			exit()
+
+	def remv_enemy(self,key_uid):
+		del self.uid2enemy_dic[key_uid]
+		
+	def update_enemy_msg(self,key_uid,x,y):
+		self.uid2enemy_dic[key_uid].update_msg(x,y)
+
+	def enemy_display(self,key_uid):
+		self.uid2enemy_dic[key_uid].display()
+
 
 #put to anthor .py file
 def key_control(hero):
@@ -173,6 +191,9 @@ def key_control(hero):
 			elif event.key == K_DOWN:
 				hero.down = True
 
+			elif event.key == K_ESCAPE:
+				sys.exit()
+
 		elif event.type ==  KEYUP:
 			hero.down = False
 			hero.left = False			
@@ -185,7 +206,7 @@ def login_data_serlia(hero):
 	seli_data.name = hero.name
 	seli_data.point_x = hero.x
 	seli_data.point_y = hero.y
-	list_ret =[]
+	list_ret = []
 	size = chr(seli_data.ByteSize())
 	list_ret.append(size)
 	list_ret.append(seli_data.SerializeToString()) 
@@ -199,9 +220,7 @@ def hero_msg_data_serlia(hero):
 
 	list_ret =[]
 	length = seli_data.ByteSize()
-	#print("hero_msg_data_serlia:length=%d"%length)
 	size = chr(seli_data.ByteSize())
-	#print("hero_msg_data_serlia:size=%s"%size)
 	list_ret.append(size)
 	list_ret.append(seli_data.SerializeToString()) 
 	return list_ret
@@ -230,7 +249,6 @@ def serialize_data(hero,type):
 def package_data_send(seria_list,type):
 	type_s = type
 	pack_data = seria_list[0] + type_s + seria_list[1] 
-	#print("len = %s"%pack_data)
 	return pack_data
 
 
@@ -241,7 +259,6 @@ def data_send(sock,pack_data):
 def client_send(sock,hero,lock):
 	while True:
 		time.sleep(0.1)
-		#sock.sendall("hellow tcp server")
 		lock.acquire()  #get lock
 
 		try:
@@ -253,28 +270,26 @@ def client_send(sock,hero,lock):
 		data_send(sock,pack_data)
 
 
+def recv_data(sock):
+	data = sock.recv(1)
+	if data:
+		size = ord(data)
 
-def client_recv(sock,buff_recv):
-	while True:
-		data = sock.recv(1)
-		if data:
-			size = ord(data)
+	data = sock.recv(1)
+	if data:
+		type = data
 
-		data = sock.recv(1)
-		if data:
-			type = data
+	data = sock.recv(size)
+	if(data != size):
+		print("recv err! exit")
+		exit()	
+	list_ret = []
+	list_ret.append(type)
+	list_ret.append(data)
 
-		data = sock.recv(size)
-		if(data != size)
-			print("recv err! exit")
-			exit()
+	return list_ret
 
-		Parse_data(type,data)
-		print(data)
-
-
-	
-
+#------------------------------------------------------------------------
 def connect_data_parse(data):
 	connect_rsp = message_pb2.Connect_rsp()
 	connect_rsp.ParseFromString(data)
@@ -290,18 +305,17 @@ def login_data_parse(data):
 	login_rsp.ParseFromString(data)
 	return login_rsp
 
+def new_enemy_data_parse(data):
+	new_enemy = message_pb2.New_enemy()
+	new_enemy.ParseFromString(data)
+	return new_enemy
 
-def Parse_data(type,data,buff_recv):
-	if(type == LOG_RSP):
-		return login_data_parse(data)
-
-	elif (type == ENEMY_MSG):
-		return enemy_msg_data_parse(data)
-
-	elif (type == CONNECT_RSP):
-		return connect_data_parse(data)
-
-def log_in(login_rsp,hero,game):
+def hero_msg_data_parse(data):
+	hero_rsp = message_pb2.Hero_rsp()
+	hero_rsp.ParseFromString(data)
+	return hero_rsp
+#-------------------------------------------------------------------------
+def handle_log_in(login_rsp,hero,game):
 	if(login_rsp.success == True):
 		hero.set_position(login_rsp.x,login_rsp.y)
 		game.set_enemy_num(login_rsp.enemy_num)
@@ -310,20 +324,74 @@ def log_in(login_rsp,hero,game):
 		print("log_in err")
 		exit()
 
-def scene_load(hero,game):
+def handle_enemy_msg(enemy_msg,game):
+	key_uid = enemy_msg.uid
+	x = enemy_msg.point_x
+	y = enemy_msg.point_y
+	game.update_enemy_msg(key_uid,x,y)
+
+
+def handle_new_enemy(new_enemy,game,screen):
+	key_uid = new_enemy.uid
+	x = new_enemy.point_x
+	y = new_enemy.point_y
+
+	enemy = ENEMY_PLAYER(screen)
+	enemy.update_msg(x,y)
 	
+	val_enemy = enemy
+	game.append_enemy(key_uid,val_enemy)
+	game.enemy_num_increase()
+
+# def handle_hero_msg(hero_msg,hero):
+# 	uid = hero_msg.uid
+# 	x = hero_msg.point_x
+# 	y = hero_msg.point_y
 
 
-def handle_game_logic(type,data,hero,game):
-	if(type == LOG_RSP):
-		login_rsp = login_data_parse(data)
-		log_in(login_rsp,hero,game)
+def handle_connect(connect_rsp,hero):
+	success = connect_rsp.success
+	if(success == True)
+		hero.set_connect(True)
+
+#------------------------------------------------------------------------
+def handle_game_logic(type,data,hero,game,screen):
+	if (type == LOG_RSP):      #if success -> in -> loader 	
+		login_rsp_data = login_data_parse(data)
+		handle_log_in(login_rsp_data,hero,game)
 
 	elif (type == ENEMY_MSG):
-		enemy_msg = enemy_msg_data_parse(data)
+		enemy_msg_data = enemy_msg_data_parse(data)
+		handle_enemy_msg(enemy_msg_data,game)
 
 	elif (type == CONNECT_RSP):
-		connect_rsp = connect_data_parse(data)	
+		connect_rsp_data = connect_data_parse(data) 
+		handle_connect(connect_rsp_data)
+
+	elif (type == NEW_ENEMY):
+		new_enemy_data = new_enemy_data_parse(data)
+		handle_new_enemy(new_enemy_data,game,screen)
+
+
+def client_recv(sock,hero,game,screen):
+	while True:
+		pack_list = recv_data(sock)
+		handle_game_logic(pack_list[0],pack_list[1],hero,game,screen)
+
+
+
+def game_prepare(game):
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	sock.connect((ADDRESS, PORT)) 
+	while True:
+		pack_list = recv_data(sock)
+		type = pack_list[0]
+		if(type == GAME_START)
+			break  #start game
+		handle_game_logic(pack_list[0],pack_list[1],hero,game,screen)
+
+	
+		
 
 def main():
 
@@ -333,11 +401,9 @@ def main():
 	background = pygame.image.load(BACK_PIC_PATH)
 	lock = threading.Lock()
 	hero = HERO_PLAYER(screen,lock)
-	enemy = ENEMY_PLAYER(screen)
+	#enemy = ENEMY_PLAYER(screen)
 	game = GAME()
-	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	sock.connect((ADDRESS, PORT)) 
-	
+	game_prepare() #prepare for game
 	print('thread %s is running...' %threading.current_thread().name)
 	thread_read = threading.Thread(target=client_send,args=(sock,hero,lock))
 	thread_write = threading.Thread(target=client_recv,args=(sock,buff_recv))
@@ -345,9 +411,9 @@ def main():
 	thread_write.start()
 
 	while True:
-		screen.blit(background, (START_X,START_Y))
+		screen.blit(background,(START_X,START_Y))
 		hero.display()
-		enemy.display()
+		#enemy.display()
 		pygame.display.update()
 
 		key_control(hero)
@@ -357,6 +423,7 @@ def main():
 	sock.close()
 	thread_read.join()
 	thread_write.join()
+	sys.exit()
 
 if __name__ == "__main__":
 	main()
