@@ -5,6 +5,7 @@ import socket
 import threading
 import message_pb2
 import sys
+import Queue
 
 PIC_X = 1000
 PIC_Y = 600
@@ -30,25 +31,32 @@ BACK_PIC_PATH = "./pic/background.jpg"
 ADDRESS = "localhost"
 PORT = 8000
 
-LOG_REQ='L'
-LOG_RSP='l'
+LOG_REQ = 'L'
+LOG_RSP = 'l'
 
-HERO_MSG_REQ="H"
-HERO_MSG_RSP='h'
+HERO_MSG_REQ = "H"
+HERO_MSG_RSP = 'h'
 
-CONNECT_REQ='C'
-CONNECT_RSP='c'
+CONNECT_REQ = 'C'
+CONNECT_RSP = 'c'
 
-HEART_REQ='R'
-HEART_REQ='r'
+HEART_REQ = 'R'
+HEART_REQ = 'r'
 
-ENEMY_MSG='e'
+ENEMY_MSG = 'e'
 
-NEW_ENEMY='n'
+NEW_ENEMY = 'n'
 
-GAME_START='s'
+GAME_START = 's'
 
-class HERO_PLAYER(object):
+QUEUE_MAX_SIZE = 1024
+QUEUE_GAME_THREAD = "queue_game_thread"
+QUEUE_SEND_THREAD = "queue_send_thread"
+
+PROTO_TYPE_INDEX = 0
+PROTO_SIZE_INDEX = 1
+
+class Hero_Play(object):
 	"""docstring for player"""
 	def __init__(self, screen,lock):
 		self.x = 0
@@ -121,9 +129,10 @@ class HERO_PLAYER(object):
 	def set_connect(flag):
 		self.connect = flag
 
-class ENEMY_PLAYER(object):
+class Enemy_Player(object):
 	"""docstring for enemy"""
 	def __init__(self, screen):
+		self.uid = 0
 		self.x = 0
 		self.y = 0
 		self.screen = screen
@@ -136,7 +145,7 @@ class ENEMY_PLAYER(object):
 		self.x = x
 		self.y = y
 
-class GAME(object):
+class Game(object):
 	"""docstring for game"""
 	def __init__(self):
 		self.uid2enemy_dic = {}
@@ -201,18 +210,19 @@ def key_control(hero):
 			hero.up = False
 
 
-def login_data_serlia(hero):
+def login_data_serlia(hero,type):
 	seli_data = message_pb2.Login_req()
 	seli_data.name = hero.name
 	seli_data.point_x = hero.x
 	seli_data.point_y = hero.y
 	list_ret = []
-	size = chr(seli_data.ByteSize())
+	size = chr(seli_data.ByteSize()+len(type))
 	list_ret.append(size)
+	list_ret.append(type)
 	list_ret.append(seli_data.SerializeToString()) 
 	return list_ret
 
-def hero_msg_data_serlia(hero):
+def hero_msg_data_serlia(hero,type):
 	seli_data = message_pb2.Hero_msg()
 	seli_data.uid = hero.uid
 	seli_data.point_x = hero.x
@@ -220,30 +230,32 @@ def hero_msg_data_serlia(hero):
 
 	list_ret =[]
 	length = seli_data.ByteSize()
-	size = chr(seli_data.ByteSize())
+	size = chr(seli_data.ByteSize()+len(type))
 	list_ret.append(size)
+	list_ret.append(type)
 	list_ret.append(seli_data.SerializeToString()) 
 	return list_ret
 
-def connect_data_serlia(hero):
+def connect_data_serlia(hero,type):
 	seli_data = message_pb2.Connect_req()
 
 	list_ret =[]
-	size = chr(seli_data.ByteSize())
+	size = chr(seli_data.ByteSize()+len(type))
 	list_ret.append(size)
+	list_ret.append(type)
 	list_ret.append(seli_data.SerializeToString()) 
 	return list_ret
 
 
 def serialize_data(hero,type):
 	if(type == LOG_REQ):
-		return login_data_serlia(hero)
+		return login_data_serlia(hero,type)
 
 	elif (type == HERO_MSG_REQ):
-		return hero_msg_data_serlia(hero)
+		return hero_msg_data_serlia(hero,type)
 
 	elif (type == CONNECT_REQ):
-		return connect_data_serlia(hero)
+		return connect_data_serlia(hero,type)
 	
 
 def package_data_send(seria_list,type):
@@ -257,7 +269,7 @@ def data_send(sock,pack_data):
 	sock.sendall(pack_data)
 
 
-def client_send(sock,hero,lock):
+def client_send(sock,hero,lock,queue_dic):
 	while True:
 		time.sleep(0.1)
 		lock.acquire()  #get lock
@@ -269,26 +281,6 @@ def client_send(sock,hero,lock):
 
 		pack_data = package_data_send(seli_data,HERO_MSG_REQ)
 		data_send(sock,pack_data)
-
-
-def recv_data(sock):
-	data = sock.recv(1)
-	if data:
-		size = ord(data)
-
-	data = sock.recv(1)
-	if data:
-		type = data
-
-	data = sock.recv(size)
-	if(data != size):
-		print("recv err! exit")
-		exit()	
-	list_ret = []
-	list_ret.append(type)
-	list_ret.append(data)
-
-	return list_ret
 
 #------------------------------------------------------------------------
 def connect_data_parse(data):
@@ -374,7 +366,7 @@ def handle_game_logic(type,data,hero,game,screen):
 		handle_new_enemy(new_enemy_data,game,screen)
 
 
-def client_recv(sock,hero,game,screen):
+def client_recv(sock,hero,game,screen,queue_dic):
 	while True:
 		pack_list = recv_data(sock)
 		handle_game_logic(pack_list[0],pack_list[1],hero,game,screen)
@@ -384,6 +376,7 @@ def client_recv(sock,hero,game,screen):
 def game_prepare(game):
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sock.connect((ADDRESS, PORT)) 
+
 	while True:
 		pack_list = recv_data(sock)
 		type = pack_list[0]
@@ -391,30 +384,86 @@ def game_prepare(game):
 			break  #start game
 		handle_game_logic(pack_list[0],pack_list[1],hero,game,screen)
 
+
+def recv_data(sock):
+	data = sock.recv(1)  
+	if data:
+		size = ord(data) 			#get data len
+
+	data = sock.recv(1)
+	if data:
+		type = data     			#get proto type
+
+	content_len = size-len(data)
+	data = sock.recv(content_len)	#get content
+
+	assert(content_len == len(data))
+
+	list_ret = []
+	list_ret.append(type)
+	list_ret.append(content_len)
+	list_ret.append(data)
+
+	return list_ret
+
+
+class Game_Start(object):
+ 	"""docstring for Game_Start"""
+ 	def __init__(self):
+ 		pass
+
+ 	def socket_connect(self,addr,port)
+ 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ 		self.sock.connect((addr, port));
+ 		return self.sock
+
+ 	def login_require(self,hero)
+		data_list = serialize_data(hero,LOG_REQ)
+		assert(type(data_list) == list)
+
+		for data in data_list:
+			self.sock.sendall(data)   # send 
+
+
+def dispose_queue_game_event(queue):
+	if queue.not_empty():
+		qnode = queue.get()  #get a node
+		proto_type = qnode[]
 	
-		
+	else
+		time.sleep(0.01)
+
+
+
+def msg_queue_creat(queue_name_list,queue_size):
+	assert(type(queue_name_list) == list)
+
+	for name in queue_name_list:
+		queue_dic[name] = Queue.Queue(queue_size)
+	return queue_dic		
+
+
 
 def main():
 
-	buff_recv = []
-	enemy_list = []
 	screen = pygame.display.set_mode((PIC_X,PIC_Y),0,32)
 	background = pygame.image.load(BACK_PIC_PATH)
+	queue_dic = msg_queue_creat([QUEUE_GAME_THREAD,QUEUE_SEND_THREAD],QUEUE_MAX_SIZE)
 	lock = threading.Lock()
-	hero = HERO_PLAYER(screen,lock)
-	#enemy = ENEMY_PLAYER(screen)
-	game = GAME()
-	game_prepare(game) #prepare for game
+	hero = Hero_Play(screen,lock)
+	game = Game()
+
+	game_prepare(game) 
+
 	print('thread %s is running...' %threading.current_thread().name)
-	thread_read = threading.Thread(target=client_send,args=(sock,hero,lock))
-	thread_write = threading.Thread(target=client_recv,args=(sock,buff_recv))
+	thread_read = threading.Thread(target=client_send,args=(sock,hero,lock,queue_dic))
+	thread_write = threading.Thread(target=client_recv,args=(sock,buff_recv,queue_dic))
 	thread_read.start()
 	thread_write.start()
 
 	while True:
 		screen.blit(background,(START_X,START_Y))
 		hero.display()
-		#enemy.display()
 		pygame.display.update()
 
 		key_control(hero)
@@ -430,4 +479,3 @@ if __name__ == "__main__":
 	main()
 
 
-#http://www.cnblogs.com/lewiskyo/p/6240854.html
