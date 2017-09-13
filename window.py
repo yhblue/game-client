@@ -28,7 +28,7 @@ ENEMY_PIC_PATH = "./pic/enemy.jpg"
 BACK_PIC_PATH = "./pic/background.jpg"
 
 ADDRESS = "localhost"
-PORT = 3080
+PORT = 8000
 
 LOG_REQ='L'
 LOG_RSP='l'
@@ -256,6 +256,7 @@ def data_send(sock,pack_data):
 	print pack_data
 	sock.sendall(pack_data)
 
+
 def client_send(sock,hero,lock):
 	while True:
 		time.sleep(0.1)
@@ -351,7 +352,7 @@ def handle_new_enemy(new_enemy,game,screen):
 
 def handle_connect(connect_rsp,hero):
 	success = connect_rsp.success
-	if(success == True)
+	if(success == True):
 		hero.set_connect(True)
 
 #------------------------------------------------------------------------
@@ -386,7 +387,7 @@ def game_prepare(game):
 	while True:
 		pack_list = recv_data(sock)
 		type = pack_list[0]
-		if(type == GAME_START)
+		if(type == GAME_START):
 			break  #start game
 		handle_game_logic(pack_list[0],pack_list[1],hero,game,screen)
 
@@ -403,7 +404,7 @@ def main():
 	hero = HERO_PLAYER(screen,lock)
 	#enemy = ENEMY_PLAYER(screen)
 	game = GAME()
-	game_prepare() #prepare for game
+	game_prepare(game) #prepare for game
 	print('thread %s is running...' %threading.current_thread().name)
 	thread_read = threading.Thread(target=client_send,args=(sock,hero,lock))
 	thread_write = threading.Thread(target=client_recv,args=(sock,buff_recv))
