@@ -396,7 +396,6 @@ def recv_data(sock):
 
 	content_len = size-len(data)
 	data = sock.recv(content_len)	#get content
-
 	assert(content_len == len(data))
 
 	list_ret = []
