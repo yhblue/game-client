@@ -72,17 +72,3 @@ if __name__ == "__main__":
 	main()
 
 
-
-# send_list = ["hello","world","welcome","to","use","python"]
-# for val in send_list:
-# 	print val
-
-# send_list = []
-# size = 65
-# send = chr(size)
-# send_list.append(send)
-# send_list.append(' ')
-# send_list.append('L')
-# send_list.append(' ')
-# send_list.append("hello")
-
