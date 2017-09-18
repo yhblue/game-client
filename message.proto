@@ -32,9 +32,7 @@ message login_rsp{
 	optional int32 point_x = 3;
 	optional int32 point_y = 4;	
 	optional int32 enemy_num = 5;
-	
 }
-
 
 message start_req{
 	required bool start = 1;

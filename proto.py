@@ -1,28 +1,34 @@
 '''
 about protobuf pack and unpack
 '''
-
-
 class ProtoType(object):
-	"""docstring for ProtoType"""
-	def __init__(self, arg):
-		self.LOG_REQ = 'L'
-		self.LOG_RSP = 'l'
-		self.HERO_MSG_REQ = 'H' 
-		self.HERO_MSG_RSP = 'h'
-		self.LEAVE_REQ = 'V'
-		self.LEAVE_RSP = 'v'
-		self.START_REQ = 'S'
-		self.START_RSP = 's'
-		self.MOVE_REQ = 'M'
-		self.MOVE_RSP = 'm'
-		self.ENEMY_MSG = 'e'
-		self.NEW_ENEMY = 'n'  
-		self.LOGIN_END = 'i'	
+		LOG_REQ = 'L'
+		LOG_RSP = 'l'
+		HERO_MSG_REQ = 'H' 
+		HERO_MSG_RSP = 'h'
+		LEAVE_REQ = 'V'
+		LEAVE_RSP = 'v'
+		START_REQ = 'S'
+		START_RSP = 's'
+		MOVE_REQ = 'M'
+		MOVE_RSP = 'm'
+		ENEMY_MSG = 'e'
+		NEW_ENEMY = 'n'  
+		LOGIN_END = 'i'		
+		ENEMY_LEAVE = 'y'
 
+	def __init__(self, arg):
+		pass
+
+class ProtoFormat(object):
+	PROTO_SIZE_INDEX = 0
+	PROTO_TYPE_INDEX = 1
+	PROTO_CONTENT_INDEX = 2
+
+	def __init__(self):
+		pass
 
 class Serialize(object):
-	"""docstring for Serialize"""
 	def __init__(self):
 		pass
 
@@ -77,6 +83,7 @@ class Deserialize(object):
 	"""docstring for Deserialize"""
 	def __init__(self):
 		self.proto_type = ProtoType()
+		self.msg_format = ProtoFormat()
 		pass
 
 	def msg_data_deseria(self,data_list):
@@ -84,9 +91,9 @@ class Deserialize(object):
 
 		rsp_list = []
 		rsp = 0
-		msg_type = data_list[PROTO_SIZE_INDEX]
-		msg_size = data_list[PROTO_TYPE_INDEX] 
-		content = data_list[PROTO_CONTENT_INDX]
+		msg_type = data_list[self.format.PROTO_SIZE_INDEX]
+		msg_size = data_list[self.format.PROTO_TYPE_INDEX] 
+		content = data_list[self.format.PROTO_CONTENT_INDX]
 
 		if msg_type == self.proto_type.LOG_RSP:
 			rsp = message_pb2.login_rsp()
