@@ -16,7 +16,7 @@ class ProtoType(object):
 	NEW_ENEMY = 'n'  
 	LOGIN_END = 'i'		
 	ENEMY_LEAVE = 'y'
-	
+
 	def __init__(self):
 		pass
 
@@ -84,16 +84,15 @@ class Deserialize(object):
 	def __init__(self):
 		self.proto_type = ProtoType()
 		self.msg_format = ProtoFormat()
-		pass
 
 	def msg_data_deseria(self,data_list):
-		assert(type(data_list) == list)
+		assert(type(data_list) == dict)
 
-		rsp_list = []
+		rsp_list = [] 
 		rsp = 0
-		msg_type = data_list[self.format.PROTO_SIZE_INDEX]
-		msg_size = data_list[self.format.PROTO_TYPE_INDEX] 
-		content = data_list[self.format.PROTO_CONTENT_INDX]
+		msg_type = data_list[self.msg_format.PROTO_SIZE_INDEX]
+		msg_size = data_list[self.msg_format.PROTO_TYPE_INDEX] 
+		content = data_list[self.msg_format.PROTO_CONTENT_INDEX]
 
 		if msg_type == self.proto_type.LOG_RSP:
 			rsp = message_pb2.login_rsp()
@@ -123,8 +122,8 @@ class Deserialize(object):
 			rsp = message_pb2.leave_rsp()
 			rsp.ParseFromString(content)			
 
-		rsp_list.append(msg_type)
 		rsp_list.append(msg_size)
+		rsp_list.append(msg_type)
 		rsp_list.append(rsp)
 
 		return rsp_list

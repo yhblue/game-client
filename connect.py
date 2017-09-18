@@ -15,6 +15,6 @@ class Socket(object):
 	def get_socket(self):
 		return self.sock
 	
-	def socket_close(slef):
+	def socket_close(self):
 		self.sock.close()
 

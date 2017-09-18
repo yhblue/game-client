@@ -1,4 +1,4 @@
-from proto import Deserialize
+from proto import Deserialize,ProtoType,ProtoFormat
 from connect import Socket
 from queue import MsgQueue
 from game import Game
@@ -10,6 +10,8 @@ import sys
 #-------------------------3 thread--------------------------------------#
 ''' socket recieve thread '''
 def dispose_recv_message(sock,msg_que):
+	# sock = arg[0]
+	# msg_que = arg[1]
 	pack_size = 0 
 	pack_type = 0
 	unpack = Deserialize()
@@ -29,7 +31,7 @@ def dispose_recv_message(sock,msg_que):
 		data = sock.recv(content_len)		#get content
 		assert(content_len == len(data))
 
-		msg_list = []
+		msg_list = {}
 		msg_list[msg_format.PROTO_SIZE_INDEX] = content_len
 		msg_list[msg_format.PROTO_TYPE_INDEX] = pack_type
 		msg_list[msg_format.PROTO_CONTENT_INDEX] = data
@@ -37,17 +39,21 @@ def dispose_recv_message(sock,msg_que):
 		unpack.msg_data_deseria(msg_list);   #unpack
 		msg_list = queue.put(msg_list)		 #push to queue
 
+
+
 ''' socket send thread '''
 def dispose_send_message(sock,msg_que):
 	queue = msg_que.get_send_thread_que()
 	while True:
 		time.sleep(1)
-		print "send thread running"
+		print "---send thread running"
 
 
 ''' game thread '''
-def dispose_game_logic():
-	game_play = Game()
+def dispose_game_logic(msg_que):
+	print "...game thread run"
+		
+	game_play = Game(msg_que)
 	game_play.game_run()
 
 
@@ -59,9 +65,9 @@ def main():
 	socket = sock.get_socket()
 	msg_queue = MsgQueue()
 
-	thread_read = threading.Thread(target=dispose_recv_message,args=(socket,msg_queue))
-	thread_write = threading.Thread(target=dispose_send_message,args=(socket,msg_queue))
-	thread_game = threading.Thread(target=dispose_game_logic,arg=(msg_queue))
+	thread_read = threading.Thread(target=dispose_recv_message,args=(socket,msg_queue,))
+	thread_write = threading.Thread(target=dispose_send_message,args=(socket,msg_queue,))
+	thread_game = threading.Thread(target=dispose_game_logic,args=(msg_queue,))
 
 	thread_read.start()
 	thread_write.start()	

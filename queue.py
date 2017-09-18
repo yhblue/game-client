@@ -7,7 +7,7 @@ QUEUE_MAX_SIZE = 1024
 class MsgQueue(object):
 	"""docstring for MsgQueue"""
 	def __init__(self):
-		self.queue_dic = []
+		self.queue_dic = {}
 		self.queue_dic[QUEUE_GAME_INDEX] = Queue.Queue(QUEUE_MAX_SIZE)
 		self.queue_dic[QUEUE_SEND_INDEX] = Queue.Queue(QUEUE_MAX_SIZE)
 

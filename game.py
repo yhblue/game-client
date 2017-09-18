@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from proto import Serialize
+from proto import Serialize,ProtoType,ProtoFormat
 import time
 import sys
 
