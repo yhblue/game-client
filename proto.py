@@ -2,22 +2,22 @@
 about protobuf pack and unpack
 '''
 class ProtoType(object):
-		LOG_REQ = 'L'
-		LOG_RSP = 'l'
-		HERO_MSG_REQ = 'H' 
-		HERO_MSG_RSP = 'h'
-		LEAVE_REQ = 'V'
-		LEAVE_RSP = 'v'
-		START_REQ = 'S'
-		START_RSP = 's'
-		MOVE_REQ = 'M'
-		MOVE_RSP = 'm'
-		ENEMY_MSG = 'e'
-		NEW_ENEMY = 'n'  
-		LOGIN_END = 'i'		
-		ENEMY_LEAVE = 'y'
-
-	def __init__(self, arg):
+	LOG_REQ = 'L'
+	LOG_RSP = 'l'
+	HERO_MSG_REQ = 'H' 
+	HERO_MSG_RSP = 'h'
+	LEAVE_REQ = 'V'
+	LEAVE_RSP = 'v'
+	START_REQ = 'S'
+	START_RSP = 's'
+	MOVE_REQ = 'M'
+	MOVE_RSP = 'm'
+	ENEMY_MSG = 'e'
+	NEW_ENEMY = 'n'  
+	LOGIN_END = 'i'		
+	ENEMY_LEAVE = 'y'
+	
+	def __init__(self):
 		pass
 
 class ProtoFormat(object):

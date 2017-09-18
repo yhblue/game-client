@@ -166,7 +166,7 @@ class Game(object):
 		def dispose_move_rsp(self,msg_rsp):
 			rsp = msg_rsp
 			if rsp.success == True:
-				if rsp.uid == self.hero.get_uid()
+				if rsp.uid == self.hero.get_uid():
 					self.hero.msg_update(rsp.pos_x,rsp.pos_y)
 					print "hero move"
 

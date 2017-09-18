@@ -127,17 +127,8 @@ def handle_new_enemy(new_enemy,game,screen):
 
 def handle_game_logic(type,data,hero,game,screen):
 	pass
+
 '''
-	
-
-
-
-
-
-
-
-
-
 def game_start_prepare(hero):
 	while True:
 		if queue.not_empty():
@@ -157,36 +148,8 @@ def game_start_prepare(hero):
 			
 			elif
 
-
-
-
-
-
-
-
-
 '''
-def dispose_queue_game_event(queue):
-	if queue.not_empty():
-		qnode = queue.get()  #get a node
-		msg_type = qnode[PROTO_TYPE_INDEX]	
 
-		if msg_type == LOG_RSP:
-
-		elif msg_type == ENEMY_MSG:
-
-		elif msg_type == NEW_ENEMY:
-
-		elif msg_type == START_RSP:
-
-		elif msg_type == LOGIN_END:
-
-		elif msg_type == MOVE_RSP:
-
-		elif msg_type == LEAVE_RSP:
-
-	else
-		time.sleep(0.01)
 
 		
 
@@ -224,4 +187,26 @@ def main():
 
 
 
+'''
+def dispose_queue_game_event(queue):
+	if queue.not_empty():
+		qnode = queue.get()  #get a node
+		msg_type = qnode[PROTO_TYPE_INDEX]	
+
+		if msg_type == LOG_RSP:
+
+		elif msg_type == ENEMY_MSG:
+
+		elif msg_type == NEW_ENEMY:
+
+		elif msg_type == START_RSP:
+
+		elif msg_type == LOGIN_END:
+
+		elif msg_type == MOVE_RSP:
+
+		elif msg_type == LEAVE_RSP:
+
+	else
+		time.sleep(0.01)
 '''
