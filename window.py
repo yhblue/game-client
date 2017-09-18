@@ -9,11 +9,11 @@ import sys
 
 #-------------------------3 thread--------------------------------------#
 ''' socket recieve thread '''
-def dispose_recv_message(sock,queue_dic):
+def dispose_recv_message(sock,msg_que):
 	pack_size = 0 
 	pack_type = 0
 	unpack = Deserialize()
-	queue = queue_dic[QUEUE_GAME_THREAD]
+	queue = msg_que.get_game_thread_que()
 	msg_format = ProtoFormat()
 
 	while True:
@@ -38,37 +38,12 @@ def dispose_recv_message(sock,queue_dic):
 		msg_list = queue.put(msg_list)		 #push to queue
 
 ''' socket send thread '''
-def dispose_send_message():
+def dispose_send_message(sock,msg_que):
+	queue = msg_que.get_send_thread_que()
 	while True:
 		time.sleep(1)
 		print "send thread running"
-'''
-	if msg_type == LOG_RSP:
-		rsp = message_pb2.login_rsp()
-		rsp.ParseFromString(content)
 
-	elif msg_type == ENEMY_MSG:
-		rsp = message_pb2.enemy_msg()
-		rsp.ParseFromString(content)
-
-	elif msg_type == NEW_ENEMY:
-		rsp = message_pb2.new_enemy()
-		rsp.ParseFromString(content)
-
-	elif msg_type == START_RSP:
-		rsp = message_pb2.start_rsp()
-		rsp.ParseFromString(content)
-
-	elif msg_type == LOGIN_END:
-		rsp = message_pb2.login_end()
-		rsp.ParseFromString(content)
-
-	elif msg_type == MOVE_RSP:
-		rsp = message_pb2.move_rsp()
-		rsp.ParseFromString(content)
-
-	elif msg_type == LEAVE_RSP:
-'''		
 
 ''' game thread '''
 def dispose_game_logic():
@@ -82,7 +57,7 @@ def main():
 	sock = Socket()
 	sock.socket_connect()
 	socket = sock.get_socket()
-	msg_queue = msg_queue_creat([QUEUE_GAME_THREAD,QUEUE_SEND_THREAD],QUEUE_MAX_SIZE)
+	msg_queue = MsgQueue()
 
 	thread_read = threading.Thread(target=dispose_recv_message,args=(socket,msg_queue))
 	thread_write = threading.Thread(target=dispose_send_message,args=(socket,msg_queue))
@@ -104,8 +79,34 @@ if __name__ == "__main__":
 	main()
 
 
-#----------------------handle service rsp---------------------------------------------------
+'''
+def dispose_queue_game_event(queue):
+	if queue.not_empty():
+		qnode = queue.get()  #get a node
+		msg_type = qnode[PROTO_TYPE_INDEX]	
 
+		if msg_type == LOG_RSP:
+
+		elif msg_type == ENEMY_MSG:
+
+		elif msg_type == NEW_ENEMY:
+
+		elif msg_type == START_RSP:
+
+		elif msg_type == LOGIN_END:
+
+		elif msg_type == MOVE_RSP:
+
+		elif msg_type == LEAVE_RSP:
+
+	else
+		time.sleep(0.01)
+'''
+
+
+
+#----------------------handle service rsp---------------------------------------------------
+'''
 def handle_enemy_msg(enemy_msg,game):
 	key_uid = enemy_msg.uid
 	x = enemy_msg.point_x
@@ -127,6 +128,7 @@ def handle_new_enemy(new_enemy,game,screen):
 
 def handle_game_logic(type,data,hero,game,screen):
 	pass
+'''
 
 '''
 def game_start_prepare(hero):
@@ -151,8 +153,7 @@ def game_start_prepare(hero):
 '''
 
 
-		
-
+'''
 def main():
 
 	screen = pygame.display.set_mode((PIC_X,PIC_Y),0,32)
@@ -183,30 +184,33 @@ def main():
 	thread_read.join()
 	thread_write.join()
 	sys.exit()
+'''		
 
-
-
-
+#-------------send thread---------------#
 '''
-def dispose_queue_game_event(queue):
-	if queue.not_empty():
-		qnode = queue.get()  #get a node
-		msg_type = qnode[PROTO_TYPE_INDEX]	
+	if msg_type == LOG_RSP:
+		rsp = message_pb2.login_rsp()
+		rsp.ParseFromString(content)
 
-		if msg_type == LOG_RSP:
+	elif msg_type == ENEMY_MSG:
+		rsp = message_pb2.enemy_msg()
+		rsp.ParseFromString(content)
 
-		elif msg_type == ENEMY_MSG:
+	elif msg_type == NEW_ENEMY:
+		rsp = message_pb2.new_enemy()
+		rsp.ParseFromString(content)
 
-		elif msg_type == NEW_ENEMY:
+	elif msg_type == START_RSP:
+		rsp = message_pb2.start_rsp()
+		rsp.ParseFromString(content)
 
-		elif msg_type == START_RSP:
+	elif msg_type == LOGIN_END:
+		rsp = message_pb2.login_end()
+		rsp.ParseFromString(content)
 
-		elif msg_type == LOGIN_END:
+	elif msg_type == MOVE_RSP:
+		rsp = message_pb2.move_rsp()
+		rsp.ParseFromString(content)
 
-		elif msg_type == MOVE_RSP:
-
-		elif msg_type == LEAVE_RSP:
-
-	else
-		time.sleep(0.01)
-'''
+	elif msg_type == LEAVE_RSP:
+'''		
