@@ -1,6 +1,8 @@
 '''
 about protobuf pack and unpack
 '''
+import message_pb2
+
 class ProtoType(object):
 	LOG_REQ = 'L'
 	LOG_RSP = 'l'
@@ -32,7 +34,7 @@ class Serialize(object):
 	def __init__(self):
 		pass
 
-	def hero_msg_seria(hero,type):
+	def hero_msg_seria(self,hero,type):
 		seria_data = message_pb2.hero_msg()
 		seria_data.uid = hero.get_uid()
 		seria_data.point_x = hero.get_position_x()
@@ -45,7 +47,7 @@ class Serialize(object):
 		list_ret.append(seria_data.SerializeToString()) 
 		return list_ret		
 
-	def login_require_seria(hero,type):
+	def login_require_seria(self,hero,type):
 		seria_data = message_pb2.login_req()
 		seria_data.name = hero.get_name()
 
@@ -56,7 +58,7 @@ class Serialize(object):
 		list_ret.append(seria_data.SerializeToString()) 
 		return list_ret
 
-	def start_request_seria(start,type):
+	def start_request_seria(self,start,type):
 		seria_data = message_pb2.start_req()
 		seria_data.start = start
 
@@ -67,7 +69,7 @@ class Serialize(object):
 		list_ret.append(seria_data.SerializeToString()) 
 		return list_ret				
 
-	def move_request_seria(operation,type):
+	def move_request_seria(self,operation,type):
 		seria_data = message_pb2.move_req()
 		seria_data.move = operation
 

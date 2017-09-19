@@ -10,8 +10,6 @@ import sys
 #-------------------------3 thread--------------------------------------#
 ''' socket recieve thread '''
 def dispose_recv_message(sock,msg_que):
-	# sock = arg[0]
-	# msg_que = arg[1]
 	pack_size = 0 
 	pack_type = 0
 	unpack = Deserialize()

@@ -55,6 +55,7 @@ class HeroPlayer(object):
 	def update_display(self):
 		self.screen.blit(self.image, (self.x,self.y))
 
+
 class EnemyPlayer(object):
 	"""docstring for enemy"""
 	def __init__(self, screen):
@@ -83,6 +84,7 @@ class EnemyPlayer(object):
 		self.x = x
 		self.y = y		
 
+
 class Game(object):
 	def __init__(self,msg_queue):
 		self.screen = pygame.display.set_mode((MAP_X,MAP_Y),0,32)
@@ -95,15 +97,16 @@ class Game(object):
 		self.pack = Serialize()
 		self.proto_type = ProtoType()
 		self.msg_format = ProtoFormat()
+		self.hero = HeroPlayer(self.screen)
 		self.log_in = False
 		self.start = False
 
 	def hero_creat(self):
-		return HeroPlayer(slef.screen)
+		return HeroPlayer(self.screen)
 
 	def enemy_creat(self,uid):
 		'''append a new enemy to dic'''
-		return EnemyPlayer(slef.screen)
+		return EnemyPlayer(self.screen)
 
 	def enemy_append(self,enemy):
 		uid = enemy.get_uid()
@@ -129,7 +132,7 @@ class Game(object):
 	def login_require(self):
 		req_list = []
 		req_list = self.pack.login_require_seria(self.hero,self.proto_type.LOG_REQ)   
-		queue_game.put(self.req_list)
+		self.queue_game.put(req_list)
 
 	def dispose_game_login(self,qnode):
 		msg_type = qnode[self.msg_format.PROTO_TYPE_INDEX]
@@ -137,13 +140,13 @@ class Game(object):
 
 		if msg_type == self.proto_type.LOG_RSP:
 			if rsp.success == True:
-				self.hero = self.hero_creat()
+				# self.hero = self.hero_creat()
 				self.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
 				self.enemy_num = rsp.enemy_num
 
 		elif msg_type == self.proto_type.HERO_MSG_RSP:
-			if hasattr(self,"hero") == False:
-				self.hero = self.hero_creat()
+			# if hasattr(self,"hero") == False:
+			# 	self.hero = self.hero_creat()
 			self.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
 
 		elif msg_type == self.proto_type.NEW_ENEMY:
@@ -194,8 +197,8 @@ class Game(object):
 		self.login_require()
 		while True:
 			if not self.queue_game.empty():
-				self.qnode = self.queue_game.get()
-				if self.qnode:
+				qnode = self.queue_game.get()
+				if qnode:
 					self.dispose_game_login(qnode)
 			else:
 				time.sleep(1)
@@ -204,7 +207,9 @@ class Game(object):
 	def game_run(self):
 		self.game_start_prepare()
 		if self.start == True:
+			self.game_update_display()
 			print "start the game"
+
 			while True:
 				if not self.queue_game.empty():
 					self.qnode = self.queue_game.get()
