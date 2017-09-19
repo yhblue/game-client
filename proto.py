@@ -84,43 +84,44 @@ class Serialize(object):
 class Deserialize(object):
 	"""docstring for Deserialize"""
 	def __init__(self):
-		self.proto_type = ProtoType()
-		self.msg_format = ProtoFormat()
+		pass
+		#self.proto_type = ProtoType()
+		#self.msg_format = ProtoFormat()
 
 	def msg_data_deseria(self,data_list):
 		assert(type(data_list) == dict)
 
 		rsp_list = [] 
 		rsp = 0
-		msg_type = data_list[self.msg_format.PROTO_SIZE_INDEX]
-		msg_size = data_list[self.msg_format.PROTO_TYPE_INDEX] 
-		content = data_list[self.msg_format.PROTO_CONTENT_INDEX]
+		msg_type = data_list[ProtoFormat.PROTO_SIZE_INDEX]
+		msg_size = data_list[ProtoFormat.PROTO_TYPE_INDEX] 
+		content = data_list[ProtoFormat.PROTO_CONTENT_INDEX]
 
-		if msg_type == self.proto_type.LOG_RSP:
+		if msg_type == ProtoType.LOG_RSP:
 			rsp = message_pb2.login_rsp()
 			rsp.ParseFromString(content)
 
-		elif msg_type == self.proto_type.ENEMY_MSG:
+		elif msg_type == ProtoType.ENEMY_MSG:
 			rsp = message_pb2.enemy_msg()
 			rsp.ParseFromString(content)
 
-		elif msg_type == self.proto_type.NEW_ENEMY:
+		elif msg_type == ProtoType.NEW_ENEMY:
 			rsp = message_pb2.new_enemy()
 			rsp.ParseFromString(content)
 
-		elif msg_type == self.proto_type.START_RSP:
+		elif msg_type == ProtoType.START_RSP:
 			rsp = message_pb2.start_rsp()
 			rsp.ParseFromString(content)
 
-		elif msg_type == self.proto_type.LOGIN_END:
+		elif msg_type == ProtoType.LOGIN_END:
 			rsp = message_pb2.login_end()
 			rsp.ParseFromString(content)
 
-		elif msg_type == self.proto_type.MOVE_RSP:
+		elif msg_type == ProtoType.MOVE_RSP:
 			rsp = message_pb2.move_rsp()
 			rsp.ParseFromString(content)
 
-		elif msg_type == self.proto_type.LEAVE_RSP:
+		elif msg_type == ProtoType.LEAVE_RSP:
 			rsp = message_pb2.leave_rsp()
 			rsp.ParseFromString(content)			
 

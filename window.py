@@ -14,7 +14,7 @@ def dispose_recv_message(sock,msg_que):
 	pack_type = 0
 	unpack = Deserialize()
 	queue = msg_que.get_game_thread_que()
-	msg_format = ProtoFormat()
+	#msg_format = ProtoFormat()
 
 	while True:
 		data = sock.recv(1) 
@@ -25,14 +25,14 @@ def dispose_recv_message(sock,msg_que):
 		if data:
 			pack_type = data     			#get proto type
 
-		content_len = pack_size-len(data)	
+		content_len = pack_size - len(data)	
 		data = sock.recv(content_len)		#get content
 		assert(content_len == len(data))
 
 		msg_list = {}
-		msg_list[msg_format.PROTO_SIZE_INDEX] = content_len
-		msg_list[msg_format.PROTO_TYPE_INDEX] = pack_type
-		msg_list[msg_format.PROTO_CONTENT_INDEX] = data
+		msg_list[ProtoFormat.PROTO_SIZE_INDEX] = content_len
+		msg_list[ProtoFormat.PROTO_TYPE_INDEX] = pack_type
+		msg_list[ProtoFormat.PROTO_CONTENT_INDEX] = data
 
 		unpack.msg_data_deseria(msg_list);   #unpack
 		msg_list = queue.put(msg_list)		 #push to queue
