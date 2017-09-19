@@ -46,12 +46,12 @@ def dispose_send_message(sock,msg_que):
 	queue = msg_que.get_send_thread_que()
 	while True:
 		time.sleep(1)
-		print "---send thread running"
+		print "---send thread running---"
 
 
 ''' game thread '''
 def dispose_game_logic(msg_que):
-	print "...game thread run"
+	print "...game thread run..."
 		
 	game_play = Game(msg_que)
 	game_play.game_run()
