@@ -9,13 +9,13 @@ import sys
 
 #-------------------------3 thread--------------------------------------#
 ''' socket recieve thread '''
-def dispose_recv_message(sock,msg_que):
+def dispose_recv_message(socket,msg_que):
+	sock = socket
 	pack_size = 0 
 	pack_type = 0
 	unpack = Deserialize()
 	queue = msg_que.get_game_thread_que()
-	#msg_format = ProtoFormat()
-
+	print "***recieve thread running***"
 	while True:
 		data = sock.recv(1) 
 		if data:
@@ -41,11 +41,17 @@ def dispose_recv_message(sock,msg_que):
 
 ''' socket send thread '''
 def dispose_send_message(sock,msg_que):
+	sock = socket
 	queue = msg_que.get_send_thread_que()
+	print "---send thread running---"
 	while True:
-		time.sleep(1)
-		print "---send thread running---"
-
+		if not self.queue_game.empty():
+			qnode = self.queue_game.get()	
+			if qnode:
+				for val in qnode:
+					sock.sendall(val)
+		else:
+			time.sleep(0.01)
 
 ''' game thread '''
 def dispose_game_logic(msg_que):
