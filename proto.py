@@ -34,59 +34,44 @@ class Serialize(object):
 	def __init__(self):
 		pass
 
-	def hero_msg_seria(self,hero,type):
-		seria_data = message_pb2.hero_msg()
-		seria_data.uid = hero.get_uid()
-		seria_data.point_x = hero.get_position_x()
-		seria_data.point_y = hero.get_position_y()
-
+	def msg_data_pack(self,seria_data,msg_type):
 		list_ret =[]
-		size = chr(seria_data.ByteSize()+len(type))  #get length
+		size = chr(seria_data.ByteSize() + len(msg_type))  #get length
 		list_ret.append(size)
-		list_ret.append(type)
-		list_ret.append(seria_data.SerializeToString()) 
-		return list_ret		
-
-	def login_require_seria(self,hero,type):
-		seria_data = message_pb2.login_req()
-		seria_data.name = hero.get_name()
-
-		list_ret = []
-		size = chr(seria_data.ByteSize()+len(type))
-		list_ret.append(size)
-		list_ret.append(type)
-		list_ret.append(seria_data.SerializeToString()) 
+		list_ret.append(msg_type)
+		list_ret.append(seria_data.SerializeToString())
 		return list_ret
 
-	def start_request_seria(self,start,type):
+	def hero_msg_seria(self,uid,pos_x,pos_y,msg_type):
+		seria_data = message_pb2.hero_msg()
+		seria_data.uid = uid
+		seria_data.point_x = pos_x
+		seria_data.point_y = pos_y
+		return self.msg_data_pack(seria_data,msg_type)		
+
+	def login_request_seria(self,name,msg_type):
+		seria_data = message_pb2.login_req()
+		seria_data.name = name
+		return self.msg_data_pack(seria_data,msg_type)
+
+	def start_request_seria(self,start,msg_type):
 		seria_data = message_pb2.start_req()
 		seria_data.start = start
+		return self.msg_data_pack(seria_data,msg_type)			
 
-		list_ret = []
-		size = chr(seria_data.ByteSize()+len(type))
-		list_ret.append(size)
-		list_ret.append(type)
-		list_ret.append(seria_data.SerializeToString()) 
-		return list_ret				
-
-	def move_request_seria(self,operation,type):
+	def move_request_seria(self,operation,msg_type):
 		seria_data = message_pb2.move_req()
 		seria_data.move = operation
+		return self.msg_data_pack(seria_data,msg_type)
 
-		list_ret = []
-		size = chr(seria_data.ByteSize()+len(type))
-		list_ret.append(size)
-		list_ret.append(type)
-		list_ret.append(seria_data.SerializeToString()) 
-		return list_ret		
-
+	def leave_request_seria(self,uid,msg_type):
+		seria_data = message_pb2.leave_req()
+		seria_data.uid = uid
+		return self.msg_data_pack(seria_data,msg_type)		
 
 class Deserialize(object):
-	"""docstring for Deserialize"""
 	def __init__(self):
 		pass
-		#self.proto_type = ProtoType()
-		#self.msg_format = ProtoFormat()
 
 	def msg_data_deseria(self,data_list):
 		assert(type(data_list) == dict)

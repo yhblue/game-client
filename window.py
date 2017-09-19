@@ -52,7 +52,7 @@ def dispose_game_logic(msg_que):
 	print "...game thread run..."
 		
 	game_play = Game(msg_que)
-	game_play.game_run()
+	game_play.game_start_run()
 
 
 ''' main function '''
