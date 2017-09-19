@@ -135,7 +135,8 @@ class Game(object):
 		self.queue_game.put(req_list)
 
 	def send_request(self,req_type):
-		if req_type == self.proto_type.
+		pass
+		#if req_type == self.proto_type.
 
 	def dispose_game_login(self,qnode):
 		msg_type = qnode[ProtoFormat.PROTO_TYPE_INDEX]
@@ -197,7 +198,7 @@ class Game(object):
 			pass
 
 	def game_start_prepare(self):
-		self.login_require()
+		self.login_request()
 		while True:
 			if not self.queue_game.empty():
 				qnode = self.queue_game.get()
