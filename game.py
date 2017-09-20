@@ -127,6 +127,27 @@ class Game(object):
 			enemy.update_display()
 		pygame.display.update()   #necessary
 
+	def key_control(self):
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				print "QUIT"
+
+			elif event.type ==  KEYDOWN:
+				if event.key == K_LEFT:
+					pass
+				elif event.key == K_RIGHT:
+					print "right"
+				elif event.key == K_UP:
+					pass
+				elif event.key == K_DOWN:
+					pass
+				elif event.key == K_ESCAPE:
+					sys.exit()				
+
+			elif event.type == KEYUP:
+				pass
+
+
 	def send_request(self,req_list):
 		self.queue_send.put(req_list)
 
@@ -154,15 +175,15 @@ class Game(object):
 		rsp = qnode[ProtoFormat.PROTO_CONTENT_INDEX]
 
 		if msg_type == ProtoType.LOG_RSP:
-			#if rsp.success == True:
-			# self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
-			# self.enemy_num = rsp.enemy_num
-			print "***LOG_RSP***"
-			print ("rsp.success = %d"%rsp.success)
-			print ("rsp.point_x = %d"%rsp.point_x)
-			print ("rsp.point_y = %d"%rsp.point_y)
-			print ("rsp.enemy_num = %d"%rsp.enemy_num)
-			print ("rsp.uid = %d"%rsp.uid)
+			if rsp.success == True:
+				self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
+				self.enemy_num = rsp.enemy_num
+			# print "***LOG_RSP***"
+			# print ("rsp.success = %d"%rsp.success)
+			# print ("rsp.point_x = %d"%rsp.point_x)
+			# print ("rsp.point_y = %d"%rsp.point_y)
+			# print ("rsp.enemy_num = %d"%rsp.enemy_num)
+			# print ("rsp.uid = %d"%rsp.uid)
 
 		elif msg_type == ProtoType.HERO_MSG_RSP:
 			self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
@@ -234,6 +255,8 @@ class Game(object):
 					self.qnode = self.queue_game.get()
 					if self.qnode:
 						self.dispose_game_logic(qnode)
+						
+					self.key_control()
 				else:	#key control
 					time.sleep(0.01)
 		else:
