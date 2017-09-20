@@ -28,10 +28,10 @@ message login_req{
 
 message login_rsp{
 	required bool success = 1;
-	optional int32 uid = 2;
-	optional int32 point_x = 3;
-	optional int32 point_y = 4;	
-	optional int32 enemy_num = 5;
+	required int32 uid = 2;
+	required int32 point_x = 3;
+	required int32 point_y = 4;	
+	required int32 enemy_num = 5;
 }
 
 message start_req{
@@ -58,13 +58,13 @@ message leave_rsp{
 
 
 message move_req{
-	required int move = 1;
+	required int32 move = 1;
 }
 
 message move_rsp{
 	required bool success = 1;
-	optional int uid = 2;
-	optional int pos_x = 3;
-	optional int pos_y = 4;
+	required int32 uid = 2;
+	required int32 pos_x = 3;
+	required int32 pos_y = 4;
 }
 

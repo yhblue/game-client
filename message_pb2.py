@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='message.proto',
   package='',
-  serialized_pb='\n\rmessage.proto\"9\n\x08hero_msg\x12\x0b\n\x03uid\x18\x01 \x02(\x05\x12\x0f\n\x07point_x\x18\x02 \x02(\x05\x12\x0f\n\x07point_y\x18\x03 \x02(\x05\":\n\tenemy_msg\x12\x0b\n\x03uid\x18\x01 \x02(\x05\x12\x0f\n\x07point_x\x18\x02 \x02(\x05\x12\x0f\n\x07point_y\x18\x03 \x02(\x05\":\n\tnew_enemy\x12\x0b\n\x03uid\x18\x01 \x02(\x05\x12\x0f\n\x07point_x\x18\x02 \x02(\x05\x12\x0f\n\x07point_y\x18\x03 \x02(\x05\"\x1a\n\x0b\x65nemy_leave\x12\x0b\n\x03uid\x18\x01 \x02(\x05\"\x19\n\tlogin_req\x12\x0c\n\x04name\x18\x01 \x02(\t\"^\n\tlogin_rsp\x12\x0f\n\x07success\x18\x01 \x02(\x08\x12\x0f\n\x07point_x\x18\x02 \x02(\x05\x12\x0f\n\x07point_y\x18\x03 \x02(\x05\x12\x11\n\tenemy_num\x18\x04 \x02(\x05\x12\x0b\n\x03uid\x18\x05 \x02(\x05\"\x1a\n\tstart_req\x12\r\n\x05start\x18\x01 \x02(\x08\"\x1a\n\tstart_rsp\x12\r\n\x05start\x18\x01 \x02(\x08\"\x1c\n\tlogin_end\x12\x0f\n\x07success\x18\x01 \x02(\x08\"\x18\n\tleave_req\x12\x0b\n\x03uid\x18\x01 \x02(\x05\"\x1a\n\tleave_rsp\x12\r\n\x05leave\x18\x01 \x02(\x08')
+  serialized_pb='\n\rmessage.proto\"9\n\x08hero_msg\x12\x0b\n\x03uid\x18\x01 \x02(\x05\x12\x0f\n\x07point_x\x18\x02 \x02(\x05\x12\x0f\n\x07point_y\x18\x03 \x02(\x05\":\n\tenemy_msg\x12\x0b\n\x03uid\x18\x01 \x02(\x05\x12\x0f\n\x07point_x\x18\x02 \x02(\x05\x12\x0f\n\x07point_y\x18\x03 \x02(\x05\":\n\tnew_enemy\x12\x0b\n\x03uid\x18\x01 \x02(\x05\x12\x0f\n\x07point_x\x18\x02 \x02(\x05\x12\x0f\n\x07point_y\x18\x03 \x02(\x05\"\x1a\n\x0b\x65nemy_leave\x12\x0b\n\x03uid\x18\x01 \x02(\x05\"\x19\n\tlogin_req\x12\x0c\n\x04name\x18\x01 \x02(\t\"^\n\tlogin_rsp\x12\x0f\n\x07success\x18\x01 \x02(\x08\x12\x0b\n\x03uid\x18\x02 \x02(\x05\x12\x0f\n\x07point_x\x18\x03 \x02(\x05\x12\x0f\n\x07point_y\x18\x04 \x02(\x05\x12\x11\n\tenemy_num\x18\x05 \x02(\x05\"\x1a\n\tstart_req\x12\r\n\x05start\x18\x01 \x02(\x08\"\x1a\n\tstart_rsp\x12\r\n\x05start\x18\x01 \x02(\x08\"\x1c\n\tlogin_end\x12\x0f\n\x07success\x18\x01 \x02(\x08\"\x18\n\tleave_req\x12\x0b\n\x03uid\x18\x01 \x02(\x05\"\x1a\n\tleave_rsp\x12\r\n\x05leave\x18\x01 \x02(\x08\"\x18\n\x08move_req\x12\x0c\n\x04move\x18\x01 \x02(\x05\"F\n\x08move_rsp\x12\x0f\n\x07success\x18\x01 \x02(\x08\x12\x0b\n\x03uid\x18\x02 \x02(\x05\x12\r\n\x05pos_x\x18\x03 \x02(\x05\x12\r\n\x05pos_y\x18\x04 \x02(\x05')
 
 
 
@@ -215,28 +215,28 @@ _LOGIN_RSP = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='point_x', full_name='login_rsp.point_x', index=1,
+      name='uid', full_name='login_rsp.uid', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='point_y', full_name='login_rsp.point_y', index=2,
+      name='point_x', full_name='login_rsp.point_x', index=2,
       number=3, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='enemy_num', full_name='login_rsp.enemy_num', index=3,
+      name='point_y', full_name='login_rsp.point_y', index=3,
       number=4, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='uid', full_name='login_rsp.uid', index=4,
+      name='enemy_num', full_name='login_rsp.enemy_num', index=4,
       number=5, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -395,6 +395,83 @@ _LEAVE_RSP = _descriptor.Descriptor(
   serialized_end=485,
 )
 
+
+_MOVE_REQ = _descriptor.Descriptor(
+  name='move_req',
+  full_name='move_req',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='move', full_name='move_req.move', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=487,
+  serialized_end=511,
+)
+
+
+_MOVE_RSP = _descriptor.Descriptor(
+  name='move_rsp',
+  full_name='move_rsp',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='success', full_name='move_rsp.success', index=0,
+      number=1, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='uid', full_name='move_rsp.uid', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='pos_x', full_name='move_rsp.pos_x', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='pos_y', full_name='move_rsp.pos_y', index=3,
+      number=4, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=513,
+  serialized_end=583,
+)
+
 DESCRIPTOR.message_types_by_name['hero_msg'] = _HERO_MSG
 DESCRIPTOR.message_types_by_name['enemy_msg'] = _ENEMY_MSG
 DESCRIPTOR.message_types_by_name['new_enemy'] = _NEW_ENEMY
@@ -406,6 +483,8 @@ DESCRIPTOR.message_types_by_name['start_rsp'] = _START_RSP
 DESCRIPTOR.message_types_by_name['login_end'] = _LOGIN_END
 DESCRIPTOR.message_types_by_name['leave_req'] = _LEAVE_REQ
 DESCRIPTOR.message_types_by_name['leave_rsp'] = _LEAVE_RSP
+DESCRIPTOR.message_types_by_name['move_req'] = _MOVE_REQ
+DESCRIPTOR.message_types_by_name['move_rsp'] = _MOVE_RSP
 
 class hero_msg(_message.Message):
   __metaclass__ = _reflection.GeneratedProtocolMessageType
@@ -472,6 +551,18 @@ class leave_rsp(_message.Message):
   DESCRIPTOR = _LEAVE_RSP
 
   # @@protoc_insertion_point(class_scope:leave_rsp)
+
+class move_req(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _MOVE_REQ
+
+  # @@protoc_insertion_point(class_scope:move_req)
+
+class move_rsp(_message.Message):
+  __metaclass__ = _reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _MOVE_RSP
+
+  # @@protoc_insertion_point(class_scope:move_rsp)
 
 
 # @@protoc_insertion_point(module_scope)

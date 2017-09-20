@@ -1,6 +1,6 @@
 import socket
 import message_pb2
-
+import time
 addr = "127.0.0.1"
 port = 8000
 
@@ -62,6 +62,7 @@ def main():
 	for val in send_list:
 		print val
 		sock.sendall(val)
+		time.sleep(0.1)
 
 	while True:
 		recv_data(sock);

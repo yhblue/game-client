@@ -13,8 +13,8 @@ Y_MAX = MAP_Y - HERO_SIZE_Y
 
 START_POSITION = (0,0)
 
-HERO_PIC_PATH = "./pic/hero.jpg"
-ENEMY_PIC_PATH = "./pic/enemy.jpg"
+HERO_PIC_PATH = "./pic/hero.png"
+ENEMY_PIC_PATH = "./pic/enemy.png"
 BACK_PIC_PATH = "./pic/background.jpg"
 
 class HeroPlayer(object):
@@ -92,7 +92,6 @@ class Game(object):
 		self.enemy_list = {}
 		self.enemy_num = 0
 		self.msg_queue = msg_queue
-		self.operation = -1
 		self.queue_send = self.msg_queue.get_send_thread_que()
 		self.queue_game = self.msg_queue.get_game_thread_que()
 		self.pack = Serialize()
@@ -122,20 +121,20 @@ class Game(object):
 		pygame.display.update()					    #update
 
 	def game_update_display(self):
-		self.screen.blit(background,START_POSITION)
+		self.screen.blit(self.background,START_POSITION)
 		self.hero.update_display()
 		for enemy in self.enemy_list:
 			enemy.update_display()
 		pygame.display.update()   #necessary
 
 	def send_request(self,req_list):
-		self.queue_game.put(req_list)
-		del req_list
+		self.queue_send.put(req_list)
 
 	def login_request(self):
 		name = self.hero.get_name()
 		req_list = self.pack.login_request_seria(name,ProtoType.LOG_REQ)   
 		self.send_request(req_list)
+		print "login request send"
 
 	def leave_request(self):
 		uid = self.hero.get_uid()
@@ -155,12 +154,18 @@ class Game(object):
 		rsp = qnode[ProtoFormat.PROTO_CONTENT_INDEX]
 
 		if msg_type == ProtoType.LOG_RSP:
-			if rsp.success == True:
-				self.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
-				self.enemy_num = rsp.enemy_num
+			#if rsp.success == True:
+			# self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
+			# self.enemy_num = rsp.enemy_num
+			print "***LOG_RSP***"
+			print ("rsp.success = %d"%rsp.success)
+			print ("rsp.point_x = %d"%rsp.point_x)
+			print ("rsp.point_y = %d"%rsp.point_y)
+			print ("rsp.enemy_num = %d"%rsp.enemy_num)
+			print ("rsp.uid = %d"%rsp.uid)
 
 		elif msg_type == ProtoType.HERO_MSG_RSP:
-			self.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
+			self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
 
 		elif msg_type == ProtoType.NEW_ENEMY:
 			enemy = self.enemy_creat()
@@ -168,7 +173,7 @@ class Game(object):
 			self.enemy_append(enemy)
 
 		elif msg_type == ProtoType.START_RSP:
-			if rsp.log_in == True:
+			if self.log_in == True:
 				self.start = rsp.start
 			else:
 				print "login error"
@@ -177,7 +182,8 @@ class Game(object):
 		elif msg_type == ProtoType.LOGIN_END:		#break	
 			if rsp.success == True:
 				self.log_in = True
-				print "login success"		
+				print "login success"	
+				self.start_request(True)	
 
 	def dispose_move_rsp(self,msg_rsp):
 		rsp = msg_rsp
@@ -207,7 +213,7 @@ class Game(object):
 
 	def game_start_prepare(self):
 		self.login_request()
-		while True:
+		while not self.start:
 			if not self.queue_game.empty():
 				qnode = self.queue_game.get()
 				if qnode:
@@ -221,7 +227,7 @@ class Game(object):
 		self.game_start_prepare()
 		if self.start == True:
 			self.game_update_display()
-			print "start the game"
+			print "----start the game-----"
 
 			while True:
 				if not self.queue_game.empty():

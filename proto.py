@@ -37,9 +37,14 @@ class Serialize(object):
 	def msg_data_pack(self,seria_data,msg_type):
 		list_ret =[]
 		size = chr(seria_data.ByteSize() + len(msg_type))  #get length
+		length = ord(size)
+		print("length = %d"%length)
 		list_ret.append(size)
 		list_ret.append(msg_type)
 		list_ret.append(seria_data.SerializeToString())
+		print "pack fun:"
+		for val in list_ret:
+			print val
 		return list_ret
 
 	def hero_msg_seria(self,uid,pos_x,pos_y,msg_type):
@@ -78,13 +83,20 @@ class Deserialize(object):
 
 		rsp_list = [] 
 		rsp = 0
-		msg_type = data_list[ProtoFormat.PROTO_SIZE_INDEX]
-		msg_size = data_list[ProtoFormat.PROTO_TYPE_INDEX] 
+		msg_size = data_list[ProtoFormat.PROTO_SIZE_INDEX] 
+		msg_type = data_list[ProtoFormat.PROTO_TYPE_INDEX]
 		content = data_list[ProtoFormat.PROTO_CONTENT_INDEX]
 
 		if msg_type == ProtoType.LOG_RSP:
+			print "---LOG_RSP---"
 			rsp = message_pb2.login_rsp()
-			rsp.ParseFromString(content)
+			rsp.ParseFromString(content)			
+			print ("rsp.success = %d"%rsp.success)
+			print ("rsp.point_x = %d"%rsp.point_x)
+			print ("rsp.point_y = %d"%rsp.point_y)
+			print ("rsp.enemy_num = %d"%rsp.enemy_num)
+			print ("rsp.uid = %d"%rsp.uid)
+
 
 		elif msg_type == ProtoType.ENEMY_MSG:
 			rsp = message_pb2.enemy_msg()
