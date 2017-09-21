@@ -23,10 +23,11 @@ class ProtoType(object):
 		pass
 
 class ProtoFormat(object):
-	PROTO_SIZE_INDEX = 0
-	PROTO_TYPE_INDEX = 1
-	PROTO_CONTENT_INDEX = 2
-
+#	PROTO_SIZE_INDEX = 0
+	PROTO_TYPE_INDEX = 0
+	PROTO_CONTENT_INDEX = 1
+	DATA_LEN_SIZE = 1
+	
 	def __init__(self):
 		pass
 
@@ -35,17 +36,14 @@ class Serialize(object):
 		pass
 
 	def msg_data_pack(self,seria_data,msg_type):
-		list_ret =[]
+		list_ret = []
 		size = chr(seria_data.ByteSize() + len(msg_type))  #get length
-		length = ord(size)
-		print("length = %d"%length)
-		list_ret.append(size)
-		list_ret.append(msg_type)
-		list_ret.append(seria_data.SerializeToString())
-		print "pack fun:"
-		for val in list_ret:
-			print val
-		return list_ret
+		data = seria_data.SerializeToString()
+		send_data = size + msg_type + data
+		# list_ret.append(size)
+		# list_ret.append(msg_type)
+		# list_ret.append(seria_data.SerializeToString())
+		return send_data
 
 	def hero_msg_seria(self,uid,pos_x,pos_y,msg_type):
 		seria_data = message_pb2.hero_msg()
@@ -83,7 +81,7 @@ class Deserialize(object):
 
 		rsp_list = [] 
 		rsp = 0
-		msg_size = data_list[ProtoFormat.PROTO_SIZE_INDEX] 
+		#msg_size = data_list[ProtoFormat.PROTO_SIZE_INDEX] 
 		msg_type = data_list[ProtoFormat.PROTO_TYPE_INDEX]
 		content = data_list[ProtoFormat.PROTO_CONTENT_INDEX]
 
@@ -122,7 +120,7 @@ class Deserialize(object):
 			rsp = message_pb2.leave_rsp()
 			rsp.ParseFromString(content)			
 
-		rsp_list.append(msg_size)
+		#rsp_list.append(msg_size)
 		rsp_list.append(msg_type)
 		rsp_list.append(rsp)
 

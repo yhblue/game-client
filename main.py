@@ -13,26 +13,28 @@ def dispose_recv_message(socket,msg_que):
 	sock = socket
 	pack_size = 0 
 	pack_type = 0
+	content = 0
 	unpack = Deserialize()
 	queue = msg_que.get_game_thread_que()
 	print "***recieve thread running***"
 	while True:
-		data = sock.recv(1) 
+		data = sock.recv(ProtoFormat.DATA_LEN_SIZE)  #one size
 		if data:
 			pack_size = ord(data) 			#get data len
 
-		data = sock.recv(1)
+		data = sock.recv(pack_size)
 		if data:
-			pack_type = data     			#get proto type
+			assert(type(data) == str)
+			print ("len(data)=%d"%len(data))
+			pack_type = data[ProtoFormat.PROTO_TYPE_INDEX]
+			content = data[ProtoFormat.PROTO_CONTENT_INDEX:]
 
-		content_len = pack_size - len(data)	
-		data = sock.recv(content_len)		#get content
-		assert(content_len == len(data))
+		assert(pack_size == len(data))
+		print ("len(content)=%d"%len(content))
 
 		msg_list = {}
-		msg_list[ProtoFormat.PROTO_SIZE_INDEX] = content_len
 		msg_list[ProtoFormat.PROTO_TYPE_INDEX] = pack_type
-		msg_list[ProtoFormat.PROTO_CONTENT_INDEX] = data
+		msg_list[ProtoFormat.PROTO_CONTENT_INDEX] = content
 
 		msg_list = unpack.msg_data_deseria(msg_list);   #unpack
 		queue.put(msg_list)		 						#push to queue
@@ -49,18 +51,10 @@ def dispose_send_message(socket,msg_que):
 		if not queue.empty():
 			qnode = queue.get()	
 			if qnode:
-				print "send queue get node"
-				for val in qnode:
-					sock.sendall(val)
-
-				# val01 = qnode[0]
-				# val02 = qnode[1]
-				# val03 = qnode[2]
-				# sock.sendall(val01)
-				# sock.sendall(val02)
-				# sock.sendall(val03)
+				sock.sendall(qnode)
 		else:
-			time.sleep(1)
+			pass
+			time.sleep(0.03)
 			#print "send queue empty"
 
 ''' game thread '''
@@ -91,6 +85,7 @@ def main():
 	thread_write.join()
 	thread_game.join()
 
+	print "close socket"
 	sock.socket_close()
 	sys.exit()
 

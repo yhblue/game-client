@@ -1,8 +1,11 @@
 import pygame
 from pygame.locals import *
 from proto import Serialize,ProtoType,ProtoFormat
+from operation import Move
 import time
 import sys
+import os
+
 
 MAP_X, MAP_Y = 1000, 600
 HERO_SIZE_X, HERO_SIZE_Y= 40, 40
@@ -30,6 +33,7 @@ class HeroPlayer(object):
 		self.left = False
 		self.right = False
 		self.down = False
+		self.move = Move.STOP
 
 	def msg_load(self,uid,x,y):
 		self.uid = uid
@@ -55,22 +59,22 @@ class HeroPlayer(object):
 	def update_display(self):
 		self.screen.blit(self.image, (self.x,self.y))
 
-	def move_left(self,left):
-		self.left = left
+	# def move_left(self,left):
+	# 	self.left = left
 
-	def move_right(self.right):
-		self.right = right
+	# def move_right(self,right):
+	# 	self.right = right
 
-	def move_up(self,up):
-		self.up = up
+	# def move_up(self,up):
+	# 	self.up = up
 
-	def move_down(self,down):
-		self.down = down
+	# def move_down(self,down):
+	# 	self.down = down
 
 	def player_move(self,operation):
 		self.move = operation
 
-	def get_move_status(self):
+	def get_operation(self):
 		return self.move
 
 class EnemyPlayer(object):
@@ -144,34 +148,6 @@ class Game(object):
 			enemy.update_display()
 		pygame.display.update()   #necessary
 
-	def key_control(self):
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				print "QUIT"
-
-			elif event.type ==  KEYDOWN:
-				if event.key == K_LEFT:
-					self.hero.move_left(True)
-
-				elif event.key == K_RIGHT:
-					self.hero.move_right(True)
-
-				elif event.key == K_UP:
-					self.hero.move_up(True)
-
-				elif event.key == K_DOWN:
-					self.hero.move_down(True)
-
-				elif event.key == K_ESCAPE:
-					sys.exit()				
-
-			elif event.type == KEYUP:
-				self.hero.move_left(False)
-				self.hero.move_right(False)
-				self.hero.move_up(False)
-				self.hero.move_down(False)
-		if()
-
 	def send_request(self,req_list):
 		self.queue_send.put(req_list)
 
@@ -191,8 +167,9 @@ class Game(object):
 		self.send_request(req_list)
 
 	def move_request(self,operation):
-		req_list = self.pack.move_request_seria(operation,ProtoType.MOVE_REQ)		
+		req_list = self.pack.move_request_seria(operation,ProtoType.MOVE_REQ)
 		self.send_request(req_list)
+		print "move request"
 
 	def dispose_game_login(self,qnode):
 		msg_type = qnode[ProtoFormat.PROTO_TYPE_INDEX]
@@ -202,12 +179,12 @@ class Game(object):
 			if rsp.success == True:
 				self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
 				self.enemy_num = rsp.enemy_num
-			# print "***LOG_RSP***"
-			# print ("rsp.success = %d"%rsp.success)
-			# print ("rsp.point_x = %d"%rsp.point_x)
-			# print ("rsp.point_y = %d"%rsp.point_y)
-			# print ("rsp.enemy_num = %d"%rsp.enemy_num)
-			# print ("rsp.uid = %d"%rsp.uid)
+				print "***LOG_RSP***"
+				print ("rsp.success = %d"%rsp.success)
+				print ("rsp.point_x = %d"%rsp.point_x)
+				print ("rsp.point_y = %d"%rsp.point_y)
+				print ("rsp.enemy_num = %d"%rsp.enemy_num)
+				print ("rsp.uid = %d"%rsp.uid)
 
 		elif msg_type == ProtoType.HERO_MSG_RSP:
 			self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
@@ -256,6 +233,42 @@ class Game(object):
 		elif msg_type == ProtoType.LEAVE_RSP:
 			pass
 
+	def key_control(self):
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				print "QUIT"
+
+			elif event.type ==  KEYDOWN:
+				if event.key == K_LEFT:
+					print "left"
+					self.hero.player_move(Move.LEFT)
+
+				elif event.key == K_RIGHT:
+					print "right"
+					self.hero.player_move(Move.RIGHT)
+
+				elif event.key == K_UP:
+					print "up"
+					self.hero.player_move(Move.UP)
+
+				elif event.key == K_DOWN:
+					print "down"
+					self.hero.player_move(Move.DOWN)
+
+				elif event.key == K_ESCAPE:
+					#sys.exit()		
+					os._exit(0)		
+
+			elif event.type == KEYUP:
+				self.hero.player_move(Move.STOP)
+				pass
+
+		move = self.hero.get_operation()
+		if move == Move.STOP:
+			pass
+		else:
+			self.move_request(move)
+
 	def game_start_prepare(self):
 		self.login_request()
 		while not self.start:
@@ -276,12 +289,12 @@ class Game(object):
 
 			while True:
 				if not self.queue_game.empty():
-					self.qnode = self.queue_game.get()
-					if self.qnode:
+					qnode = self.queue_game.get()
+					if qnode:
 						self.dispose_game_logic(qnode)
 						
 				self.key_control()
-				#print "game run"
+				self.game_update_display()
 				time.sleep(0.01)
 		else:
 			print "start error"
