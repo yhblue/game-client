@@ -55,6 +55,23 @@ class HeroPlayer(object):
 	def update_display(self):
 		self.screen.blit(self.image, (self.x,self.y))
 
+	def move_left(self,left):
+		self.left = left
+
+	def move_right(self.right):
+		self.right = right
+
+	def move_up(self,up):
+		self.up = up
+
+	def move_down(self,down):
+		self.down = down
+
+	def player_move(self,operation):
+		self.move = operation
+
+	def get_move_status(self):
+		return self.move
 
 class EnemyPlayer(object):
 	"""docstring for enemy"""
@@ -134,19 +151,26 @@ class Game(object):
 
 			elif event.type ==  KEYDOWN:
 				if event.key == K_LEFT:
-					pass
+					self.hero.move_left(True)
+
 				elif event.key == K_RIGHT:
-					print "right"
+					self.hero.move_right(True)
+
 				elif event.key == K_UP:
-					pass
+					self.hero.move_up(True)
+
 				elif event.key == K_DOWN:
-					pass
+					self.hero.move_down(True)
+
 				elif event.key == K_ESCAPE:
 					sys.exit()				
 
 			elif event.type == KEYUP:
-				pass
-
+				self.hero.move_left(False)
+				self.hero.move_right(False)
+				self.hero.move_up(False)
+				self.hero.move_down(False)
+		if()
 
 	def send_request(self,req_list):
 		self.queue_send.put(req_list)
@@ -256,9 +280,9 @@ class Game(object):
 					if self.qnode:
 						self.dispose_game_logic(qnode)
 						
-					self.key_control()
-				else:	#key control
-					time.sleep(0.01)
+				self.key_control()
+				#print "game run"
+				time.sleep(0.01)
 		else:
 			print "start error"
 			sys.exit()

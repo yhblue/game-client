@@ -61,7 +61,7 @@ def dispose_send_message(socket,msg_que):
 				# sock.sendall(val03)
 		else:
 			time.sleep(1)
-			print "send queue empty"
+			#print "send queue empty"
 
 ''' game thread '''
 def dispose_game_logic(msg_que):
