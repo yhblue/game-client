@@ -115,6 +115,7 @@ class Deserialize(object):
 		elif msg_type == ProtoType.MOVE_RSP:
 			rsp = message_pb2.move_rsp()
 			rsp.ParseFromString(content)
+			print "MOVE RSP"
 
 		elif msg_type == ProtoType.LEAVE_RSP:
 			rsp = message_pb2.leave_rsp()

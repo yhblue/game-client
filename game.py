@@ -219,6 +219,7 @@ class Game(object):
 		rsp = qnode[ProtoFormat.PROTO_CONTENT_INDEX]
 
 		if msg_type == ProtoType.MOVE_RSP:
+			print "dispose move rsp"
 			self.dispose_move_rsp(rsp)
 
 		elif msg_type == ProtoType.NEW_ENEMY:
