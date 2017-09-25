@@ -40,7 +40,7 @@ class HeroPlayer(object):
 		self.x = x
 		self.y = y
 
-	def msg_update(x,y):
+	def msg_update(self,x,y):
 		self.x = x
 		self.y = y
 
@@ -97,7 +97,7 @@ class EnemyPlayer(object):
 	def update_display(self):
 		self.screen.blit(self.image, (self.x,self.y))
 
-	def msg_update(x,y):
+	def msg_update(self,x,y):
 		self.x = x
 		self.y = y
 
@@ -179,12 +179,12 @@ class Game(object):
 			if rsp.success == True:
 				self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
 				self.enemy_num = rsp.enemy_num
-				print "***LOG_RSP***"
-				print ("rsp.success = %d"%rsp.success)
-				print ("rsp.point_x = %d"%rsp.point_x)
-				print ("rsp.point_y = %d"%rsp.point_y)
-				print ("rsp.enemy_num = %d"%rsp.enemy_num)
-				print ("rsp.uid = %d"%rsp.uid)
+				# print "***LOG_RSP***"
+				# print ("rsp.success = %d"%rsp.success)
+				# print ("rsp.point_x = %d"%rsp.point_x)
+				# print ("rsp.point_y = %d"%rsp.point_y)
+				# print ("rsp.enemy_num = %d"%rsp.enemy_num)
+				# print ("rsp.uid = %d"%rsp.uid)
 
 		elif msg_type == ProtoType.HERO_MSG_RSP:
 			self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
@@ -211,8 +211,13 @@ class Game(object):
 		rsp = msg_rsp
 		if rsp.success == True:
 			if rsp.uid == self.hero.get_uid():
+				print("suc=%d"%rsp.success)
+				print("uid=%d"%rsp.uid)
+				print("x=%d"%rsp.pos_x)
+				print("y=%d,"%rsp.pos_y)
 				self.hero.msg_update(rsp.pos_x,rsp.pos_y)
-				print "hero move"
+		else:
+			print "can not move"
 
 	def dispose_game_logic(self,qnode):
 		msg_type = qnode[ProtoFormat.PROTO_TYPE_INDEX]
@@ -269,6 +274,7 @@ class Game(object):
 			pass
 		else:
 			self.move_request(move)
+			time.sleep(0.05);
 
 	def game_start_prepare(self):
 		self.login_request()

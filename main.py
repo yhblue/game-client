@@ -54,7 +54,7 @@ def dispose_send_message(socket,msg_que):
 				sock.sendall(qnode)
 		else:
 			pass
-			time.sleep(0.03)
+			#time.sleep(0.05)
 			#print "send queue empty"
 
 ''' game thread '''
