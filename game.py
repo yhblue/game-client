@@ -189,7 +189,7 @@ class Game(object):
 		elif msg_type == ProtoType.HERO_MSG_RSP:
 			self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
 
-		elif msg_type == ProtoType.NEW_ENEMY:
+		elif msg_type == ProtoType.ENEMY_MSG:
 			enemy = self.enemy_creat()
 			enemy.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
 			self.enemy_append(enemy)
@@ -219,6 +219,13 @@ class Game(object):
 		else:
 			print "can not move"
 
+	def dispose_new_enemy_msg(self,msg_rsp): #ENEMY_MSG
+		rsp = msg_rsp
+		enemy = self.enemy_creat()
+		enemy.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
+		self.enemy_append(enemy)	#写到这里	
+
+
 	def dispose_game_logic(self,qnode):
 		msg_type = qnode[ProtoFormat.PROTO_TYPE_INDEX]
 		rsp = qnode[ProtoFormat.PROTO_CONTENT_INDEX]
@@ -228,6 +235,7 @@ class Game(object):
 			self.dispose_move_rsp(rsp)
 
 		elif msg_type == ProtoType.NEW_ENEMY:
+
 			pass
 
 		elif msg_type == ProtoType.ENEMY_MSG:
