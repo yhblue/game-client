@@ -316,8 +316,9 @@ class Game(object):
 					self.dispose_game_login(qnode)
 					print "queue game get msg"
 			else:
-				time.sleep(1)
-				print "wait for login success"			
+				pass
+				#time.sleep(0.05)
+				#print "wait for login success"			
 
 	def game_start_run(self):
 		self.game_start_prepare()
