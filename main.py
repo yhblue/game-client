@@ -24,8 +24,8 @@ def dispose_recv_message(socket,msg_que):
 
 		data = sock.recv(pack_size)
 		if data:
-			assert(type(data) == str)
-			print ("len(data)=%d"%len(data))
+			# assert(type(data) == str)
+			# print ("len(data)=%d"%len(data))
 			pack_type = data[ProtoFormat.PROTO_TYPE_INDEX]
 			content = data[ProtoFormat.PROTO_CONTENT_INDEX:]
 

@@ -95,7 +95,7 @@ class EnemyPlayer(object):
 		return self.uid
 
 	def update_display(self):
-		self.screen.blit(self.image, (self.x,self.y))
+		self.screen.blit(self.image,(self.x,self.y))
 
 	def msg_update(self,x,y):
 		self.x = x
@@ -139,7 +139,7 @@ class Game(object):
 	def update_enemy_msg(self,uid,x,y):
 		self.enemy_list[key_uid].update_msg(x,y)
 		self.enemy_list[key_uid].update_display()  	#draw
-		pygame.display.update()					    #update
+		#pygame.display.update()					    #update
 
 	def game_update_display(self):
 		self.screen.blit(self.background,START_POSITION)
@@ -189,7 +189,7 @@ class Game(object):
 		elif msg_type == ProtoType.HERO_MSG_RSP:
 			self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
 
-		elif msg_type == ProtoType.ENEMY_MSG:
+		elif msg_type == ProtoType.ENEMY_MSG:#existed player
 			enemy = self.enemy_creat()
 			enemy.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
 			self.enemy_append(enemy)
@@ -225,6 +225,28 @@ class Game(object):
 		enemy.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
 		self.enemy_append(enemy)	#写到这里	
 
+	def dispose_enemy_msg(self,msg_rsp):
+		rsp = msg_rsp
+		uid = rsp.uid
+		if uid != self.hero.get_uid():
+			self.update_enemy_msg(rsp.uid,rsp.point_x,rsp.point_y)
+		else:
+			pass
+
+	def dispose_enemy_leave_msg(self,msg_rsp):
+		rsp = msg_rsp
+		uid = rsp.uid
+		if uid != self.hero.get_uid():
+			self.remove_enemy(uid)
+		else:
+			pass
+
+	def dispose_leave_rsp(self,msg_rsp):
+		rsp = msg_rsp
+		if rsp.leave == True:
+			pass   #what shuould i do?
+		else:
+			pass
 
 	def dispose_game_logic(self,qnode):
 		msg_type = qnode[ProtoFormat.PROTO_TYPE_INDEX]
@@ -235,14 +257,16 @@ class Game(object):
 			self.dispose_move_rsp(rsp)
 
 		elif msg_type == ProtoType.NEW_ENEMY:
-
-			pass
+			print "new enemy"
+			self.dispose_new_enemy_msg(rsp)
 
 		elif msg_type == ProtoType.ENEMY_MSG:
-			pass
+			print "enemy msg"
+			self.dispose_enemy_msg(rsp)
 
 		elif msg_type == ProtoType.ENEMY_LEAVE:
-			pass
+			print "enemy leave"
+			self.dispose_enemy_leave_msg(rsp)
 
 		elif msg_type == ProtoType.LEAVE_RSP:
 			pass
@@ -270,7 +294,8 @@ class Game(object):
 					self.hero.player_move(Move.DOWN)
 
 				elif event.key == K_ESCAPE:
-					#sys.exit()		
+					#sys.exit()	
+					#self.leave_request() #leave request -> wait to leave 	
 					os._exit(0)		
 
 			elif event.type == KEYUP:
