@@ -138,7 +138,7 @@ class Game(object):
 
 	def update_enemy_msg(self,uid,x,y):
 		self.enemy_list[uid].msg_update(x,y)
-		self.enemy_list[uid].update_display()  	#draw
+		#self.enemy_list[uid].update_display()  	#draw
 		#pygame.display.update()			    #update
 
 	def game_update_display(self):
@@ -170,7 +170,7 @@ class Game(object):
 	def move_request(self,operation):
 		req_list = self.pack.move_request_seria(operation,ProtoType.MOVE_REQ)
 		self.send_request(req_list)
-		print "move request"
+		#print "move request"
 
 	def dispose_game_login(self,qnode):
 		msg_type = qnode[ProtoFormat.PROTO_TYPE_INDEX]
@@ -213,10 +213,10 @@ class Game(object):
 		rsp = msg_rsp
 		if rsp.success == True:
 			if rsp.uid == self.hero.get_uid():
-				print("suc=%d"%rsp.success)
-				print("uid=%d"%rsp.uid)
-				print("x=%d"%rsp.pos_x)
-				print("y=%d,"%rsp.pos_y)
+				# print("suc=%d"%rsp.success)
+				# print("uid=%d"%rsp.uid)
+				# print("x=%d"%rsp.pos_x)
+				# print("y=%d,"%rsp.pos_y)
 				self.hero.msg_update(rsp.pos_x,rsp.pos_y)
 		else:
 			print "can not move"
@@ -233,7 +233,7 @@ class Game(object):
 		if uid != self.hero.get_uid():
 			self.update_enemy_msg(rsp.uid,rsp.point_x,rsp.point_y)
 		else:
-			pass
+			self.hero.msg_update(rsp.point_x,rsp.point_y)
 
 	def dispose_enemy_leave_msg(self,msg_rsp):
 		rsp = msg_rsp
@@ -255,15 +255,16 @@ class Game(object):
 		rsp = qnode[ProtoFormat.PROTO_CONTENT_INDEX]
 
 		if msg_type == ProtoType.MOVE_RSP:
-			print "dispose move rsp"
-			self.dispose_move_rsp(rsp)
+			#print "dispose move rsp"
+			#self.dispose_move_rsp(rsp)
+			pass
 
 		elif msg_type == ProtoType.NEW_ENEMY:
 			print "new enemy"
 			self.dispose_new_enemy_msg(rsp)
 
 		elif msg_type == ProtoType.ENEMY_MSG:
-			print "enemy msg"
+			#print "enemy msg"
 			self.dispose_enemy_msg(rsp)
 
 		elif msg_type == ProtoType.ENEMY_LEAVE:

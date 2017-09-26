@@ -30,7 +30,7 @@ def dispose_recv_message(socket,msg_que):
 			content = data[ProtoFormat.PROTO_CONTENT_INDEX:]
 
 		assert(pack_size == len(data))
-		print ("len(content)=%d"%len(content))
+		#print ("len(content)=%d"%len(content))
 
 		msg_list = {}
 		msg_list[ProtoFormat.PROTO_TYPE_INDEX] = pack_type
