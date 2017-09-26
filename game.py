@@ -59,18 +59,6 @@ class HeroPlayer(object):
 	def update_display(self):
 		self.screen.blit(self.image, (self.x,self.y))
 
-	# def move_left(self,left):
-	# 	self.left = left
-
-	# def move_right(self,right):
-	# 	self.right = right
-
-	# def move_up(self,up):
-	# 	self.up = up
-
-	# def move_down(self,down):
-	# 	self.down = down
-
 	def player_move(self,operation):
 		self.move = operation
 
@@ -119,6 +107,8 @@ class Game(object):
 		self.hero = HeroPlayer(self.screen)
 		self.log_in = False
 		self.start = False
+		self.count_hero = 0
+		self.cont_enemy = 0
 
 	def hero_creat(self):
 		return HeroPlayer(self.screen)
@@ -138,8 +128,8 @@ class Game(object):
 
 	def update_enemy_msg(self,uid,x,y):
 		self.enemy_list[uid].msg_update(x,y)
-		#self.enemy_list[uid].update_display()  	#draw
-		#pygame.display.update()			    #update
+		#self.enemy_list[uid].update_display()    #draw
+		#pygame.display.update()			      #update
 
 	def game_update_display(self):
 		self.screen.blit(self.background,START_POSITION)
@@ -147,7 +137,7 @@ class Game(object):
 		for uid,enemy in self.enemy_list.items(): #dict type
 			if enemy:
 				enemy.update_display()
-		pygame.display.update()   #necessary
+		pygame.display.update()   				  #necessary
 
 	def send_request(self,req_list):
 		self.queue_send.put(req_list)
@@ -232,8 +222,13 @@ class Game(object):
 		uid = rsp.uid
 		if uid != self.hero.get_uid():
 			self.update_enemy_msg(rsp.uid,rsp.point_x,rsp.point_y)
+			self.cont_enemy += 1
+			print("enemy:%d"%self.cont_enemy)
 		else:
 			self.hero.msg_update(rsp.point_x,rsp.point_y)
+			self.count_hero += 1
+			print("hero:%d"%self.count_hero)
+
 
 	def dispose_enemy_leave_msg(self,msg_rsp):
 		rsp = msg_rsp
