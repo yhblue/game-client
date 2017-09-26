@@ -123,7 +123,7 @@ class Game(object):
 	def hero_creat(self):
 		return HeroPlayer(self.screen)
 
-	def enemy_creat(self,uid):
+	def enemy_creat(self):
 		'''append a new enemy to dic'''
 		return EnemyPlayer(self.screen)
 
@@ -133,19 +133,20 @@ class Game(object):
 		self.enemy_num += 1 
 
 	def remove_enemy(self,uid):
-		del enemy_list[uid]
+		del self.enemy_list[uid]
 		self.enemy_num -= 1
 
 	def update_enemy_msg(self,uid,x,y):
-		self.enemy_list[key_uid].update_msg(x,y)
-		self.enemy_list[key_uid].update_display()  	#draw
-		#pygame.display.update()					    #update
+		self.enemy_list[uid].msg_update(x,y)
+		self.enemy_list[uid].update_display()  	#draw
+		#pygame.display.update()			    #update
 
 	def game_update_display(self):
 		self.screen.blit(self.background,START_POSITION)
 		self.hero.update_display()
-		for enemy in self.enemy_list:
-			enemy.update_display()
+		for uid,enemy in self.enemy_list.items(): #dict type
+			if enemy:
+				enemy.update_display()
 		pygame.display.update()   #necessary
 
 	def send_request(self,req_list):
@@ -192,6 +193,7 @@ class Game(object):
 		elif msg_type == ProtoType.ENEMY_MSG:#existed player
 			enemy = self.enemy_creat()
 			enemy.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
+			print type(enemy)
 			self.enemy_append(enemy)
 
 		elif msg_type == ProtoType.START_RSP:
@@ -223,7 +225,7 @@ class Game(object):
 		rsp = msg_rsp
 		enemy = self.enemy_creat()
 		enemy.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
-		self.enemy_append(enemy)	#写到这里	
+		self.enemy_append(enemy)	
 
 	def dispose_enemy_msg(self,msg_rsp):
 		rsp = msg_rsp
@@ -307,7 +309,7 @@ class Game(object):
 			pass
 		else:
 			self.move_request(move)
-			time.sleep(0.05);
+			#time.sleep(0.05);
 
 	def game_start_prepare(self):
 		self.login_request()
@@ -335,7 +337,7 @@ class Game(object):
 						
 				self.key_control()
 				self.game_update_display()
-				time.sleep(0.01)
+				time.sleep(0.05);
 		else:
 			print "start error"
 			sys.exit()
