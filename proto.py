@@ -121,6 +121,10 @@ class Deserialize(object):
 			rsp = message_pb2.leave_rsp()
 			rsp.ParseFromString(content)			
 
+		elif msg_type == ProtoType.ENEMY_LEAVE:
+			rsp = message_pb2.enemy_leave()
+			rsp.ParseFromString(content)
+			print "enemy_msg seria"
 		#rsp_list.append(msg_size)
 		rsp_list.append(msg_type)
 		rsp_list.append(rsp)

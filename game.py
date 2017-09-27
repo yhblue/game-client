@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from proto import Serialize,ProtoType,ProtoFormat
 from operation import Move
+from connect import Socket
 import time
 import sys
 import os
@@ -167,7 +168,7 @@ class Game(object):
 	def dispose_game_login(self,qnode):
 		msg_type = qnode[ProtoFormat.PROTO_TYPE_INDEX]
 		rsp = qnode[ProtoFormat.PROTO_CONTENT_INDEX]
-
+		
 		if msg_type == ProtoType.LOG_RSP:
 			if rsp.success == True:
 				self.hero.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
@@ -185,9 +186,7 @@ class Game(object):
 		elif msg_type == ProtoType.ENEMY_MSG:#existed player
 			enemy = self.enemy_creat()
 			print "existed enemy"
-			#print("%d %d "%rsp.point_x%rsp.point_y)
 			enemy.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
-			#print type(enemy)
 			self.enemy_append(enemy)
 
 		elif msg_type == ProtoType.START_RSP:
@@ -236,6 +235,7 @@ class Game(object):
 	def dispose_enemy_leave_msg(self,msg_rsp):
 		rsp = msg_rsp
 		uid = rsp.uid
+		print type(msg_rsp)
 		if uid != self.hero.get_uid():
 			self.remove_enemy(uid)
 		else:
@@ -244,7 +244,8 @@ class Game(object):
 	def dispose_leave_rsp(self,msg_rsp):
 		rsp = msg_rsp
 		if rsp.leave == True:			#what shuould i do? exit
-			self.sock.socket_close()
+			#self.sock.socket_close()
+			self.sock.close()
 			print "close socket"
 			os._exit(0)
 		else:							#if false,again
@@ -254,7 +255,7 @@ class Game(object):
 	def dispose_game_logic(self,qnode):
 		msg_type = qnode[ProtoFormat.PROTO_TYPE_INDEX]
 		rsp = qnode[ProtoFormat.PROTO_CONTENT_INDEX]
-
+		print("msg_type = %c"%msg_type)
 		if msg_type == ProtoType.MOVE_RSP:
 			#print "dispose move rsp"
 			#self.dispose_move_rsp(rsp)
