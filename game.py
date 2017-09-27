@@ -95,7 +95,7 @@ class EnemyPlayer(object):
 
 
 class Game(object):
-	def __init__(self,msg_queue):
+	def __init__(self,socket,msg_queue):
 		self.screen = pygame.display.set_mode((MAP_X,MAP_Y),0,32)
 		self.background = pygame.image.load(BACK_PIC_PATH)
 		self.enemy_list = {}
@@ -107,8 +107,9 @@ class Game(object):
 		self.hero = HeroPlayer(self.screen)
 		self.log_in = False
 		self.start = False
+		self.sock = socket
 		self.count_hero = 0
-		self.cont_enemy = 0
+		self.cont_enemy = 0		
 
 	def hero_creat(self):
 		return HeroPlayer(self.screen)
@@ -152,6 +153,7 @@ class Game(object):
 		uid = self.hero.get_uid()
 		req_list = self.pack.leave_request_seria(uid,ProtoType.LEAVE_REQ)
 		self.send_request(req_list)
+		print "leave request send"
 
 	def start_request(self,start):
 		req_list = self.pack.start_request_seria(start,ProtoType.START_REQ)
@@ -229,7 +231,6 @@ class Game(object):
 			self.count_hero += 1
 			print("hero:%d"%self.count_hero)
 
-
 	def dispose_enemy_leave_msg(self,msg_rsp):
 		rsp = msg_rsp
 		uid = rsp.uid
@@ -240,10 +241,13 @@ class Game(object):
 
 	def dispose_leave_rsp(self,msg_rsp):
 		rsp = msg_rsp
-		if rsp.leave == True:
-			pass   #what shuould i do?
-		else:
-			pass
+		if rsp.leave == True:			#what shuould i do? exit
+			self.sock.socket_close()
+			print "close socket"
+			os._exit(0)
+		else:							#if false,again
+			self.leave_request()
+			
 
 	def dispose_game_logic(self,qnode):
 		msg_type = qnode[ProtoFormat.PROTO_TYPE_INDEX]
@@ -292,9 +296,8 @@ class Game(object):
 					self.hero.player_move(Move.DOWN)
 
 				elif event.key == K_ESCAPE:
-					#sys.exit()	
-					#self.leave_request() #leave request -> wait to leave 	
-					os._exit(0)		
+					self.leave_request() #leave request -> wait to leave 	
+					#os._exit(0)		
 
 			elif event.type == KEYUP:
 				self.hero.player_move(Move.STOP)
@@ -339,111 +342,3 @@ class Game(object):
 			print "start error"
 			sys.exit()
 
-	
-'''
-def key_control(hero):
-	for event in pygame.event.get():
-		if event.type == QUIT:
-			print("exit")
-			exit()
-
-		elif event.type ==  KEYDOWN:
-
-			if event.key == K_LEFT:
-				hero.left = True
-
-			elif event.key == K_RIGHT:
-				hero.right = True
-
-			elif event.key == K_UP:
-				hero.up = True 
-
-			elif event.key == K_DOWN:
-				hero.down = True
-
-			elif event.key == K_ESCAPE:
-				sys.exit()
-
-		elif event.type ==  KEYUP:
-			hero.down = False
-			hero.left = False			
-			hero.right = False
-			hero.up = False
-'''
-
-'''
-class Game(object):
-	"""docstring for game"""
-	def __init__(self,msg_queue):
-		self.screen = pygame.display.set_mode((MAP_X,MAP_Y),0,32)
-		self.background = pygame.image.load(BACK_PIC_PATH)
-		self.uid2enemy_dic = {}
-		self.enemy_num = 0
-		self.log_in = False
-		self.msg_queue = msg_queue
-
-	def hero_creat(slef):
-		self.hero = HeroPlayer(slef.screen)
-
-	def append_enemy(self,key_uid,val_enemy):
-		self.uid2enemy_dic(self,key_uid,val_enemy)
-
-	def set_enemy_num(self,num):
-		self.enemy_num = num
-
-	def enemy_num_increase(self):
-		self.enemy_num += 1
-
-	def get_enemy_num(self):
-		if(len(self.uid2enemy_dic) == self.enemy_num):
-			return self.enemy_num
-		else:
-			print("get_enemy_num err")
-			exit()
-
-	def remove_enemy(self,key_uid):
-		del self.uid2enemy_dic[key_uid]
-		
-	def update_enemy_msg(self,key_uid,x,y):
-		self.uid2enemy_dic[key_uid].update_msg(x,y)
-
-	def enemy_display(self,key_uid):
-		self.uid2enemy_dic[key_uid].display()
-
-	def game_update_display(self):
-		self.screen.blit(background,START_POSITION)
-		self.hero.update_display()
-		pygame.display.update()
-
-	def game_run(self):
-
-
-
-	def move_left(self):
-		if self.x >= STEP:
-			self.x -= STEP
-
-	def move_right(self):	
-	
-		if self.x <= X_MAX - STEP:
-			self.x += STEP
-
-	def move_up(self):
-		if self.y >= STEP:
-			self.y -= STEP
-
-	def move_down(self):
-		if self.y <= Y_MAX - STEP:
-			self.y += STEP
-
-	def position_update(self):
-		if(self.up == True):
-			self.move_up()
-		elif(self.down == True):
-			self.move_down()
-		elif(self.left == True):
-			self.move_left()
-		elif(self.right == True):
-			self.move_right()			
-
-'''

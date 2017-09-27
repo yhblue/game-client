@@ -56,10 +56,10 @@ def dispose_send_message(socket,msg_que):
 
 
 ''' game thread '''
-def dispose_game_logic(msg_que):
+def dispose_game_logic(socket,msg_que):
 	print "...game thread run..."
-		
-	game_play = Game(msg_que)
+	
+	game_play = Game(socket,msg_que)
 	game_play.game_start_run()
 
 
@@ -73,7 +73,7 @@ def main():
 
 	thread_read = threading.Thread(target=dispose_recv_message,args=(socket,msg_queue,))
 	thread_write = threading.Thread(target=dispose_send_message,args=(socket,msg_queue,))
-	thread_game = threading.Thread(target=dispose_game_logic,args=(msg_queue,))
+	thread_game = threading.Thread(target=dispose_game_logic,args=(socket,msg_queue,))
 
 	thread_read.start()
 	thread_write.start()	
@@ -83,9 +83,9 @@ def main():
 	thread_write.join()
 	thread_game.join()
 
-	print "close socket"
-	sock.socket_close()
-	sys.exit()
+	# print "close socket"
+	# sock.socket_close()
+	# sys.exit()
 
 
 if __name__ == "__main__":
