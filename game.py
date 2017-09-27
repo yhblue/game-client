@@ -271,7 +271,8 @@ class Game(object):
 			self.dispose_enemy_leave_msg(rsp)
 
 		elif msg_type == ProtoType.LEAVE_RSP:
-			pass
+			print "leave rsp"
+			self.dispose_leave_rsp(rsp)
 
 	def key_control(self):
 		for event in pygame.event.get():
