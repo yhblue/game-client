@@ -184,8 +184,10 @@ class Game(object):
 
 		elif msg_type == ProtoType.ENEMY_MSG:#existed player
 			enemy = self.enemy_creat()
+			print "existed enemy"
+			#print("%d %d "%rsp.point_x%rsp.point_y)
 			enemy.msg_load(rsp.uid,rsp.point_x,rsp.point_y)
-			print type(enemy)
+			#print type(enemy)
 			self.enemy_append(enemy)
 
 		elif msg_type == ProtoType.START_RSP:
