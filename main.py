@@ -50,8 +50,8 @@ def dispose_send_message(socket,msg_que):
 			if qnode:
 				sock.sendall(qnode)
 		else:
-			pass
-			#time.sleep(0.05)
+			#pass
+			time.sleep(0.05)
 
 
 
